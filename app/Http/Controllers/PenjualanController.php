@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Barang;
+use App\Models\Customer;
 use App\Models\Penjualan;
 use Illuminate\Http\Request;
 
@@ -13,7 +14,7 @@ class PenjualanController extends Controller
      */
     public function index()
     {
-        $penjualans = Penjualan::with('barang')->get();
+        $penjualans = Penjualan::with('barang', 'customer')->get();
         return view('penjualan.index_penjualan', compact('penjualans'));
     }
 
@@ -23,8 +24,8 @@ class PenjualanController extends Controller
     public function create()
     {
         $barang = Barang::all();
-        // dd($barang);
-        return view('penjualan.create_penjualan', compact('barang'));
+        $customers = Customer::all();
+        return view('penjualan.create_penjualan', compact('barang', 'customers'));
     }
 
     /**
@@ -34,6 +35,7 @@ class PenjualanController extends Controller
     {
         $request->validate([
             'barang_id' => 'required|exists:barang,id',
+            'customer_id' => 'required|exists:customers,id',
             'jumlah' => 'required|integer|min:1',
             'tanggal_penjualan' => 'required|date',
         ]);
@@ -56,6 +58,7 @@ class PenjualanController extends Controller
             // Buat penjualan baru
             Penjualan::create([
                 'barang_id' => $request->barang_id,
+                'customer_id' => $request->customer_id,
                 'jumlah' => $request->jumlah,
                 'harga_jual' => $totalHarga,
                 'tanggal_penjualan' => $request->tanggal_penjualan,

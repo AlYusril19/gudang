@@ -23,9 +23,20 @@
                             </div>
                         </div>
                         <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label" for="barang_id">ID Customer</label>
+                            <div class="col-sm-10">
+                                <select name="customer_id" id="customer_id" class="form-control select2">
+                                    <option value="">-- Pilih Customer --</option>
+                                    @foreach($customers as $customer)
+                                        <option value="{{ $customer->id }}">{{ $customer->nama }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
                             <label class="col-sm-2 col-form-label" for="jumlah">Jumlah</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="jumlah" name="jumlah" placeholder="10" required>
+                                <input type="text" class="form-control" id="jumlah" name="jumlah" placeholder="10" value="1" required>
                             </div>
                         </div>
                         {{-- <div class="row mb-3">

@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('penjualan', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('barang_id');
+            $table->unsignedBigInteger('customer_id');
             $table->integer('jumlah');
             $table->decimal('harga_jual', 15, 0);
             $table->date('tanggal_penjualan');
@@ -21,6 +22,7 @@ return new class extends Migration
             
             // relasi ke tabel barang
             $table->foreign('barang_id')->references('id')->on('barang')->onDelete('cascade');
+            $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
         });
     }
 

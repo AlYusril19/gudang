@@ -178,6 +178,21 @@
               </ul>
             </li>
 
+            <li class="menu-item {{ \Route::is('customer.*') ? 'active open' : '' }}">
+              <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons bx bx-layout"></i>
+                <div data-i18n="Layouts">Customer</div>
+              </a>
+
+              <ul class="menu-sub">
+                <li class="menu-item {{ \Route::is('customer.index') ? 'active' : '' }}">
+                  <a href="{{ route('customer.index') }}" class="menu-link">
+                    <div data-i18n="Without menu">Daftar Customer</div>
+                  </a>
+                </li>
+              </ul>
+            </li>
+
             {{-- <li class="menu-item {{ \Route::is('pembelian.*') ? 'active open' : '' }}">
               <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons bx bx-layout"></i>

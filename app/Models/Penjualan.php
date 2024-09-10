@@ -12,6 +12,7 @@ class Penjualan extends Model
 
     protected $fillable = [
         'barang_id', 
+        'customer_id', 
         'jumlah', 
         'harga_jual', 
         'tanggal_penjualan'
@@ -23,5 +24,10 @@ class Penjualan extends Model
     public function barang()
     {
         return $this->belongsTo(Barang::class);
+    }
+
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
     }
 }
