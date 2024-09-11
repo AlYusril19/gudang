@@ -1,7 +1,6 @@
 @extends('layouts.app_sneat')
 
 @section('content')
-    {{-- <h5 class="pb-1 mb-6">Data Peserta</h5> --}}
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Daftar Barang Keluar</h5>
@@ -10,30 +9,36 @@
         <div class="text-nowrap table-responsive">
             <table class="table">
                 <caption class="ms-4">
-                    Data Barang Keluar
+                    Data Barang Masuk
                 </caption>
                 <thead>
                     <tr>
                         <th>No</th>
-                        <th>Nama Barang</th>
-                        <th>Customer</th>
-                        <th>Harga Jual</th>
-                        <th>Jumlah</th>
                         <th>Tanggal Penjualan</th>
+                        <th>Customer</th>
+                        <th>Barang</th>
+                        <th>Jumlah</th>
+                        <th>Total Harga</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="table-border-bottom-0">
-                    @foreach($penjualans as $penjualan)
+                    @foreach ($penjualan as $p)
                         <tr>
                             <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>{{ $loop->iteration }}</strong></td>
-                            <td>{{ $penjualan->barang->nama_barang }}</td>
-                            <td>{{ $penjualan->customer->nama }}</td>
-                            {{-- {{ dd($penjualan->barang) }} --}}
-                            {{-- {{ dd($penjualan->customer) }} --}}
-                            <td>{{ formatRupiah($penjualan->harga_jual) }}</td>
-                            <td>{{ $penjualan->jumlah }}</td>
-                            <td>{{ $penjualan->tanggal_penjualan->format('Y-m-d') }}</td>
+                            <td>{{ $p->tanggal_penjualan }}</td>
+                            <td>{{ $p->customer->nama }}</td>
+                            <td>
+                                @foreach ($p->penjualanBarang as $barang)
+                                    {{ $barang->barang->nama_barang }} ({{ $barang->jumlah }} pcs)<br>
+                                @endforeach
+                            </td>
+                            <td>
+                                @foreach ($p->penjualanBarang as $barang)
+                                    {{ formatRupiah($barang->harga_jual * $barang->jumlah) }}<br>
+                                @endforeach
+                            </td>
+                            <td>{{ formatRupiah($p->penjualanBarang->sum(fn($barang) => $barang->harga_jual * $barang->jumlah)) }}</td>
                             <td>
                                 <div class="dropdown">
                                     <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
@@ -42,7 +47,7 @@
                                     <div class="dropdown-menu">
                                         {{-- <a class="dropdown-item" href="{{ route('barang.show', $barang->id) }}"><i class="bx bx-show-alt me-2"></i> Show</a> --}}
                                         {{-- <a class="dropdown-item" href="{{ route('pembelian.edit', $pembelian->id) }}"><i class="bx bx-edit-alt me-2"></i> Edit</a> --}}
-                                        <form action="{{ route('penjualan.destroy', $penjualan->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus peserta ini?');">
+                                        <form action="{{ route('penjualan.destroy', $p->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="dropdown-item"><i class="bx bx-trash me-1"></i> Delete</button>

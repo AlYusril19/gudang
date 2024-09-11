@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminBerandaController;
+use App\Http\Controllers\Api\StokBarangController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\OperatorBerandaController;
@@ -57,6 +58,8 @@ Route::group(['middleware' => ['auth', 'role:admin']], function () {
     Route::post('/admin/barang_keluar', [PenjualanController::class, 'store'])->name('penjualan.store');
     Route::post('/get-harga-jual', [PenjualanController::class, 'getHargaJual']);
     Route::delete('/admin/barang_keluar/{id}', [PenjualanController::class, 'destroy'])->name('penjualan.destroy');
+
+    Route::get('/get-stok/{id}', [PenjualanController::class, 'getStok']);
 
     Route::get('/admin/customer/index', [CustomerController::class, 'index'])->name('customer.index');
     Route::get('/admin/customer/create', [CustomerController::class, 'create'])->name('customer.create');

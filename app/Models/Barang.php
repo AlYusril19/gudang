@@ -19,4 +19,10 @@ class Barang extends Model
         'harga_jual',
         'stok',
     ];
+    public function penjualans()
+    {
+        return $this->belongsToMany(Penjualan::class, 'penjualan_barang')
+                    ->withPivot('jumlah', 'harga_jual')
+                    ->withTimestamps();
+    }
 }

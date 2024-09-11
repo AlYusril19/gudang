@@ -38,7 +38,7 @@
                                     <div class="dropdown-menu">
                                         {{-- <a class="dropdown-item" href="{{ route('barang.show', $barang->id) }}"><i class="bx bx-show-alt me-2"></i> Show</a> --}}
                                         <a class="dropdown-item" href="{{ route('pembelian.edit', $pembelian->id) }}"><i class="bx bx-edit-alt me-2"></i> Edit</a>
-                                        <form action="{{ route('pembelian.destroy', $pembelian->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus peserta ini?');">
+                                        <form action="{{ route('pembelian.destroy', $pembelian->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="dropdown-item"><i class="bx bx-trash me-1"></i> Delete</button>

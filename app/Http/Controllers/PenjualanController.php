@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Barang;
 use App\Models\Customer;
 use App\Models\Penjualan;
+use App\Models\PenjualanBarang;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class PenjualanController extends Controller
 {
@@ -14,8 +17,11 @@ class PenjualanController extends Controller
      */
     public function index()
     {
-        $penjualans = Penjualan::with('barang', 'customer')->get();
-        return view('penjualan.index_penjualan', compact('penjualans'));
+        // Ambil semua data penjualan dengan relasi ke customer dan barang
+        $penjualan = Penjualan::with('customer', 'penjualanBarang.barang')->get();
+
+        // Kirim data penjualan ke view
+        return view('penjualan.index_penjualan', compact('penjualan'));
     }
 
     /**
@@ -34,39 +40,48 @@ class PenjualanController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'barang_id' => 'required|exists:barang,id',
             'customer_id' => 'required|exists:customers,id',
-            'jumlah' => 'required|integer|min:1',
-            'tanggal_penjualan' => 'required|date',
+            'barang_ids' => 'required|array',
+            'barang_ids.*' => 'exists:barang,id',
+            'jumlah' => 'required|array',
+            'jumlah.*' => 'integer|min:1',
         ]);
 
         try {
-            // Ambil data barang berdasarkan ID yang dipilih
-            $barang = Barang::findOrFail($request->barang_id);
-            
-            // Hitung total harga
-            $totalHarga = $barang->harga_jual * $request->jumlah;
-            
-            // stok barang berkurang
-            if ($barang->stok < $request->jumlah) {
-                return redirect()->back()->withErrors(['msg' => 'Stok barang tidak mencukupi.']);
-                // return redirect()->route('penjualan.create')->with('error', 'Stok Barang Kurang.');
-            }
-            $barang->stok -= $request->jumlah;
-            $barang->save();
+            DB::beginTransaction();
 
-            // Buat penjualan baru
-            Penjualan::create([
-                'barang_id' => $request->barang_id,
+            // Simpan data penjualan utama
+            $penjualan = Penjualan::create([
                 'customer_id' => $request->customer_id,
-                'jumlah' => $request->jumlah,
-                'harga_jual' => $totalHarga,
-                'tanggal_penjualan' => $request->tanggal_penjualan,
+                'tanggal_penjualan' => now(),
             ]);
 
-        return redirect()->route('penjualan.index')->with('success', 'Penjualan berhasil ditambahkan.');
+            // Simpan detail penjualan (barang yang dijual)
+            foreach ($request->barang_ids as $index => $barangId) {
+                $barang = Barang::findOrFail($barangId);
+                // Periksa apakah stok mencukupi
+                if ($barang->stok < $request->jumlah[$index]) {
+                    // return redirect()->back()->with('error', "Stok barang {$barang->nama_barang} tidak mencukupi");
+                    return redirect()->back()->with('error', "Stok barang {$barang->nama_barang} tidak mencukupi. Stok tersedia: {$barang->stok}, jumlah yang diminta: {$request->jumlah[$index]}");
+                }
+                
+                $penjualan->PenjualanBarang()->create([
+                    'penjualan_id' => $penjualan->id,
+                    'barang_id' => $barangId,
+                    'jumlah' => $request->jumlah[$index],
+                    'harga_jual' => $barang->harga_jual,
+                ]);
+
+                // Update stok barang
+                $barang->stok -= $request->jumlah[$index];
+                $barang->save();
+            }
+
+            DB::commit();
+            return redirect()->route('penjualan.index')->with('success', 'Penjualan berhasil disimpan.');
         } catch (\Exception $e) {
-            return redirect()->route('penjualan.create')->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
 
@@ -99,15 +114,47 @@ class PenjualanController extends Controller
      */
     public function destroy(string $id)
     {
-        $penjualan = Penjualan::findOrFail($id);
-        // Kurangi stok barang sebelum menghapus
-        $barang = Barang::find($penjualan->barang_id);
-        $barang->stok += $penjualan->jumlah;
-        $barang->save();
+        try {
+            DB::beginTransaction();
 
-        $penjualan->delete();
+            // Temukan data penjualan
+            $penjualan = Penjualan::findOrFail($id);
 
-        return redirect()->route('penjualan.index')->with('success', 'Penjualan berhasil dihapus dan stok barang diperbarui.');
+            // Kembalikan stok barang
+            foreach ($penjualan->penjualanBarang as $detail) {
+                $barang = Barang::find($detail->barang_id);
+                $barang->stok += $detail->jumlah;
+                $barang->save();
+            }
+
+            // Hapus detail penjualan
+            $penjualan->penjualanBarang()->delete();
+
+            // Hapus data penjualan utama
+            $penjualan->delete();
+
+            DB::commit();
+
+            return redirect()->route('penjualan.index')->with('success', 'Data penjualan berhasil dihapus.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    public function getStok($id)
+    {
+        // Temukan barang berdasarkan ID
+        $barang = Barang::find($id);
+
+        // Jika barang ditemukan, kembalikan data stok dalam format JSON
+        if ($barang) {
+            return response()->json([
+                'stok' => $barang->stok
+            ]);
+        } else {
+            return response()->json(['error' => 'Barang tidak ditemukan'], 404);
+        }
     }
 
     public function getHargaJual(Request $request)
