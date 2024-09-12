@@ -19,7 +19,7 @@
         <select name="barang_id" id="barang_id" class="form-control">
             <option value="">Pilih Barang</option>
             @foreach($barang as $b)
-                <option value="{{ $b->id }}">{{ $b->nama_barang }}</option>
+                <option value="{{ $b->id }}" data-harga="{{ $b->harga_jual }}">{{ $b->nama_barang }}</option>
             @endforeach
         </select>
     </div>
@@ -45,11 +45,19 @@
             <tr>
                 <th>Barang</th>
                 <th>Jumlah</th>
+                <th>Harga Jual</th>
+                <th>Total Harga</th>
                 <th>Aksi</th>
             </tr>
         </thead>
         <tbody></tbody>
     </table>
+
+    <!-- Total Harga Jual -->
+    <div class="form-group">
+        <label>Total Harga Jual</label>
+        <input type="text" id="total-harga-jual" class="form-control" readonly>
+    </div>
 
     <!-- Submit Button -->
     <button type="submit" id="btn-submit-penjualan" class="btn btn-success">Simpan Penjualan</button>
@@ -61,6 +69,21 @@
 <!-- AJAX Code -->
 <script>
     $(document).ready(function() {
+        function updateTotalHargaJual() {
+            let totalHarga = 0;
+
+            $('#daftar-barang tbody tr').each(function() {
+                const jumlah = parseInt($(this).find('.jumlah-barang').text());
+                const hargaJual = parseFloat($(this).find('.barang-harga-jual').text().replace(/[^0-9]/g, '')); // Remove 'Rp ' and format to number
+                const total = jumlah * hargaJual;
+
+                $(this).find('.total-harga').text(formatRupiahJS(total));
+                totalHarga += total;
+            });
+
+            $('#total-harga-jual').val(formatRupiahJS(totalHarga));
+        }
+
         // Function to handle barang selection and fetch stock
         $('#barang_id').on('change', function() {
             var barangId = $(this).val();
@@ -88,6 +111,7 @@
         $('#btn-tambah-barang').on('click', function() {
             var barangId = $('#barang_id').val();
             var barangNama = $('#barang_id option:selected').text();
+            var hargaJual = parseFloat($('#barang_id option:selected').data('harga'));
             var jumlah = parseInt($('#jumlah').val());
             var stok = parseInt($('#stok').val());
 
@@ -105,6 +129,7 @@
                         if (newJumlah <= maxStok) {
                             $(this).find('.jumlah-barang').text(newJumlah);
                             $(this).find('input[name="jumlah[]"]').val(newJumlah);
+                            updateTotalHargaJual();
                         } else {
                             alert('Jumlah total melebihi stok yang tersedia!');
                         }
@@ -113,18 +138,23 @@
                 });
 
                 if (!exists) {
+                    var totalHarga = hargaJual * jumlah;
                     var row = `<tr data-barang-id="${barangId}" data-stok-barang="${stok}">
                         <td>${barangNama}</td>
                         <td>
                             <button type="button" class="btn btn-secondary btn-kurang-barang">-</button>
                             <span class="jumlah-barang">${jumlah}</span>
                             <button type="button" class="btn btn-secondary btn-tambah-barang">+</button>
+                            <input type="hidden" name="barang_ids[]" value="${barangId}">
+                            <input type="hidden" name="jumlah[]" value="${jumlah}">
                         </td>
+                        <td>
+                            <span class="barang-harga-jual">${formatRupiahJS(hargaJual)}</span>
+                        </td>
+                        <td class="total-harga">${formatRupiahJS(totalHarga)}</td>
                         <td>
                             <button type="button" class="btn btn-danger btn-hapus-barang">Hapus</button>
                         </td>
-                        <input type="hidden" name="barang_ids[]" value="${barangId}">
-                        <input type="hidden" name="jumlah[]" value="${jumlah}">
                     </tr>`;
                     $('#daftar-barang tbody').append(row);
 
@@ -132,6 +162,8 @@
                     $('#barang_id').val('');
                     $('#jumlah').val(1);
                     $('#stok').val('');
+
+                    updateTotalHargaJual();
                 }
             } else {
                 alert('Jumlah yang dimasukkan melebihi stok yang tersedia!');
@@ -141,6 +173,7 @@
         // Function to Remove Barang
         $(document).on('click', '.btn-hapus-barang', function() {
             $(this).closest('tr').remove();
+            updateTotalHargaJual();
         });
 
         // Function to increase quantity
@@ -153,6 +186,8 @@
                 var newJumlah = currentJumlah + 1;
                 row.find('.jumlah-barang').text(newJumlah);
                 row.find('input[name="jumlah[]"]').val(newJumlah);
+                row.find('td.total-harga').text(formatRupiahJS(newJumlah * parseFloat(row.find('.barang-harga-jual').text().replace(/[^0-9]/g, ''))));
+                updateTotalHargaJual();
             } else {
                 alert('Jumlah melebihi stok yang tersedia!');
             }
@@ -167,6 +202,8 @@
                 var newJumlah = currentJumlah - 1;
                 row.find('.jumlah-barang').text(newJumlah);
                 row.find('input[name="jumlah[]"]').val(newJumlah);
+                row.find('td.total-harga').text(formatRupiahJS(newJumlah * parseFloat(row.find('.barang-harga-jual').text().replace(/[^0-9]/g, ''))));
+                updateTotalHargaJual();
             } else {
                 alert('Jumlah tidak bisa kurang dari 1!');
             }

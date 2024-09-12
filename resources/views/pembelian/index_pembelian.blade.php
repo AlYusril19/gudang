@@ -7,7 +7,7 @@
             <a href="{{ route('pembelian.create') }}" class="btn btn-primary mb-0">Barang Keluar</a>
         </div> --}}
         <div class="card-header d-flex justify-content-between align-items-center">
-            <a href="{{ route('pembelian.create') }}" class="btn btn-primary mb-0">Barang Keluar</a>
+            <a href="{{ route('pembelian.create') }}" class="btn btn-primary mb-0">Barang Masuk</a>
             <div class=" align-items-center">
                 <form action="{{ route('pembelian.index') }}" method="GET" class="d-flex me-2">
                     <input type="text" name="search" class="form-control me-2" placeholder="Cari Supplier / Bulan" value="{{ request('search') }}">
@@ -16,7 +16,7 @@
             </div>
         </div>
         <div class="text-nowrap table-responsive">
-            <table class="table">
+            <table class="table table-striped">
                 <caption class="ms-4">
                     Data Barang Masuk
                 </caption>
@@ -47,7 +47,7 @@
                                     {{ formatRupiah($barang->harga_beli * $barang->jumlah) }}<br>
                                 @endforeach
                             </td>
-                            <td>{{ formatRupiah($p->pembelianBarang->sum(fn($barang) => $barang->harga_beli * $barang->jumlah)) }}</td>
+                            <td>{{ formatRupiah($p->total_harga) }}</td>
                             <td>
                                 <div class="dropdown">
                                     <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">

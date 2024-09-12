@@ -68,6 +68,7 @@ class PenjualanController extends Controller
                 'customer_id' => $request->customer_id,
                 'tanggal_penjualan' => now(),
             ]);
+            $totalHarga = 0;
 
             // Simpan detail penjualan (barang yang dijual)
             foreach ($request->barang_ids as $index => $barangId) {
@@ -88,7 +89,10 @@ class PenjualanController extends Controller
                 // Update stok barang
                 $barang->stok -= $request->jumlah[$index];
                 $barang->save();
+                $totalHarga += $barang->harga_jual * $request->jumlah[$index];
             }
+            $penjualan->total_harga = $totalHarga;
+            $penjualan->save();
 
             DB::commit();
             return redirect()->route('penjualan.index')->with('success', 'Penjualan berhasil disimpan.');

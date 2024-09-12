@@ -53,6 +53,7 @@ Route::group(['middleware' => ['auth', 'role:admin']], function () {
     Route::get('/admin/barang_masuk/{id}/edit', [PembelianController::class, 'edit'])->name('pembelian.edit');
     Route::put('/admin/barang_masuk/{id}/edit', [PembelianController::class, 'update'])->name('pembelian.update');
     Route::delete('/admin/barang_masuk/{id}', [PembelianController::class, 'destroy'])->name('pembelian.destroy');
+    Route::get('/admin/barang_masuk/harga-beli', [PembelianController::class, 'getHargaBeli'])->name('pembelian.getHargaBeli');
 
     Route::get('/admin/barang_keluar/index', [PenjualanController::class, 'index'])->name('penjualan.index');
     Route::get('/admin/barang_keluar/create', [PenjualanController::class, 'create'])->name('penjualan.create');

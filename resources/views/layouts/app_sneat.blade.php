@@ -151,7 +151,7 @@
             <!-- Layouts -->
             <li class="menu-item {{ \Route::is('barang.*') || \Route::is('pembelian.*') || \Route::is('penjualan.*') ? 'active open' : '' }}">
               <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class="menu-icon tf-icons bx bx-layout"></i>
+                <i class="menu-icon tf-icons bx bx-package"></i>
                 <div data-i18n="Layouts">Data Barang</div>
               </a>
 
@@ -180,7 +180,7 @@
 
             <li class="menu-item {{ \Route::is('customer.*') ? 'active open' : '' }}">
               <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class="menu-icon tf-icons bx bx-layout"></i>
+                <i class="menu-icon tf-icons bx bx-group"></i>
                 <div data-i18n="Layouts">Customer</div>
               </a>
 
@@ -195,7 +195,7 @@
 
             <li class="menu-item {{ \Route::is('supplier.*') ? 'active open' : '' }}">
               <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class="menu-icon tf-icons bx bx-layout"></i>
+                <i class="menu-icon tf-icons bx bx-store"></i>
                 <div data-i18n="Layouts">Supplier</div>
               </a>
 
@@ -208,42 +208,12 @@
               </ul>
             </li>
 
-            {{-- <li class="menu-item {{ \Route::is('pembelian.*') ? 'active open' : '' }}">
-              <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class="menu-icon tf-icons bx bx-layout"></i>
-                <div data-i18n="Layouts">Barang Masuk</div>
-              </a>
-
-              <ul class="menu-sub">
-                <li class="menu-item {{ \Route::is('pembelian.index') ? 'active' : '' }}">
-                  <a href="{{ route('pembelian.index') }}" class="menu-link">
-                    <div data-i18n="Without menu">Daftar Pembelian</div>
-                  </a>
-                </li>
-              </ul>
-            </li>
-
-            <li class="menu-item {{ \Route::is('penjualan.*') ? 'active open' : '' }}">
-              <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class="menu-icon tf-icons bx bx-layout"></i>
-                <div data-i18n="Layouts">Barang Keluar</div>
-              </a>
-
-              <ul class="menu-sub">
-                <li class="menu-item {{ \Route::is('penjualan.index') ? 'active' : '' }}">
-                  <a href="{{ route('penjualan.index') }}" class="menu-link">
-                    <div data-i18n="Without menu">Daftar Penjualan</div>
-                  </a>
-                </li>
-              </ul>
-            </li> --}}
-
             <li class="menu-header small text-uppercase">
               <span class="menu-header-text">Pages</span>
             </li>
             <li class="menu-item {{ \Route::is('users.*') ? 'active open' : '' }}">
               <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class="menu-icon tf-icons bx bx-dock-top"></i>
+                <i class="menu-icon tf-icons bx bx-user"></i>
                 <div data-i18n="Account Settings">Account Settings</div>
               </a>
               <ul class="menu-sub">
@@ -477,5 +447,14 @@
 
     <!-- Place this tag in your head or just before your close body tag. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
+    {{-- Format Rupiah --}}
+    <script>
+      function formatRupiahJS(angka) {
+          var reverse = angka.toString().split('').reverse().join('');
+          var ribuan = reverse.match(/\d{1,3}/g);
+          ribuan = ribuan.join('.').split('').reverse().join('');
+          return 'Rp ' + ribuan;
+      }
+    </script>
   </body>
 </html>

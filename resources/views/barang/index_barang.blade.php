@@ -15,10 +15,31 @@
                 <thead>
                     <tr>
                         <th>No</th>
-                        <th>Nama Barang</th>
-                        <th>Harga Beli</th>
+                        <th>
+                            <a href="{{ route('barang.index', ['order_by' => 'nama_barang', 'direction' => $orderBy === 'nama_barang' && $direction === 'asc' ? 'desc' : 'asc']) }}">
+                                Nama Barang
+                                @if($orderBy === 'nama_barang')
+                                    <i class="bx {{ $direction === 'asc' ? 'bx-up-arrow-alt' : 'bx-down-arrow-alt' }}"></i>
+                                @endif
+                            </a>
+                        </th>
+                        <th>
+                            <a href="{{ route('barang.index', ['order_by' => 'harga_beli', 'direction' => $orderBy === 'harga_beli' && $direction === 'asc' ? 'desc' : 'asc']) }}">
+                                Harga Beli
+                                @if($orderBy === 'harga_beli')
+                                    <i class="bx {{ $direction === 'asc' ? 'bx-up-arrow-alt' : 'bx-down-arrow-alt' }}"></i>
+                                @endif
+                            </a>
+                        </th>
                         <th>Harga Jual</th>
-                        <th>Stok</th>
+                        <th>
+                            <a href="{{ route('barang.index', ['order_by' => 'stok', 'direction' => $orderBy === 'stok' && $direction === 'asc' ? 'desc' : 'asc']) }}">
+                                Stok
+                                @if($orderBy === 'stok')
+                                    <i class="bx {{ $direction === 'asc' ? 'bx-up-arrow-alt' : 'bx-down-arrow-alt' }}"></i>
+                                @endif
+                            </a>
+                        </th>
                         <th>Aksi</th>
                     </tr>
                 </thead>

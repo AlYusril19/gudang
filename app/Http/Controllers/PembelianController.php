@@ -41,9 +41,9 @@ class PembelianController extends Controller
      */
     public function create()
     {
-        $supplier = Supplier::all();
+        $suppliers = Supplier::all();
         $barang = Barang::all();
-        return view('pembelian.create_pembelian', compact('barang', 'supplier'));
+        return view('pembelian.create_pembelian', compact('barang', 'suppliers'));
     }
 
     /**
@@ -57,6 +57,8 @@ class PembelianController extends Controller
             'barang_ids.*' => 'exists:barang,id',
             'jumlah' => 'required|array',
             'jumlah.*' => 'integer|min:1',
+            'harga_beli' => 'required|array',
+            'harga_beli.*' => 'integer',
         ]);
 
         try {
@@ -67,6 +69,7 @@ class PembelianController extends Controller
                 'supplier_id' => $request->supplier_id,
                 'tanggal_pembelian' => now(),
             ]);
+            $totalHarga = 0;
 
             // Simpan detail pembelian (barang yang dijual)
             foreach ($request->barang_ids as $index => $barangId) {
@@ -76,13 +79,18 @@ class PembelianController extends Controller
                     'pembelian_id' => $pembelian->id,
                     'barang_id' => $barangId,
                     'jumlah' => $request->jumlah[$index],
-                    'harga_beli' => $barang->harga_beli,
+                    'harga_beli' => $request->harga_beli[$index],
                 ]);
 
                 // Update stok barang
                 $barang->stok += $request->jumlah[$index];
+                $barang->harga_beli = $request->harga_beli[$index];
                 $barang->save();
+                // Hitung total harga
+                $totalHarga += $request->harga_beli[$index]*$request->jumlah[$index];
             }
+            $pembelian->total_harga = $totalHarga;
+            $pembelian->save();
 
             DB::commit();
             return redirect()->route('pembelian.index')->with('success', 'Pembelian berhasil disimpan.');
@@ -191,4 +199,16 @@ class PembelianController extends Controller
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
+
+    public function getHargaBeli(Request $request)
+    {
+        $barang = Barang::find($request->id);
+        if ($barang) {
+            return response()->json([
+                'harga_beli' => $barang->harga_beli
+            ]);
+        }
+        return response()->json(['error' => 'Barang tidak ditemukan'], 404);
+    }
+    
 }

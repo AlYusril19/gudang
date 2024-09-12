@@ -16,9 +16,9 @@
             </div>
         </div>
         <div class="text-nowrap table-responsive">
-            <table class="table">
+            <table class="table table-striped">
                 <caption class="ms-4">
-                    Data Barang Masuk
+                    Data Barang Keluar
                 </caption>
                 <thead>
                     <tr>
@@ -47,7 +47,7 @@
                                     {{ formatRupiah($barang->harga_jual * $barang->jumlah) }}<br>
                                 @endforeach
                             </td>
-                            <td>{{ formatRupiah($p->penjualanBarang->sum(fn($barang) => $barang->harga_jual * $barang->jumlah)) }}</td>
+                            <td>{{ formatRupiah($p->total_harga) }}</td>
                             <td>
                                 <div class="dropdown">
                                     <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">

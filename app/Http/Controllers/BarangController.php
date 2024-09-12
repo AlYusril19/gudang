@@ -10,10 +10,13 @@ class BarangController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $barangs = Barang::all();
-        return view('barang.index_barang', compact('barangs'));
+        $orderBy = $request->get('order_by', 'nama_barang');  // Default sorting by nama_barang
+        $direction = $request->get('direction', 'asc');       // Default direction is ascending
+
+        $barangs = Barang::orderBy($orderBy, $direction)->get();
+        return view('barang.index_barang', compact('barangs', 'orderBy', 'direction'));
     }
 
     /**
@@ -31,14 +34,20 @@ class BarangController extends Controller
     {
         $request->validate([
             'kode_barang' => 'required|string|max:32|unique:barang',
-            'nama_barang' => 'required|string|max:32',
+            'nama_barang' => 'required|string|max:32|unique:barang',
             'harga_beli' => 'required|numeric',
             'harga_jual' => 'required|numeric',
             'deskripsi' => 'required|string|max:1024',
-            // 'stok' => 'nullable|numeric',
         ]);
+        $hargaJual = (1 + ($request->harga_jual/100)) * $request->harga_beli;
 
-        Barang::create($request->all());
+        Barang::create([
+            'kode_barang' => $request->kode_barang,
+            'nama_barang' => $request->nama_barang,
+            'harga_beli' => $request->harga_beli,
+            'harga_jual' => $hargaJual,
+            'deskripsi' => $request->deskripsi,
+        ]);
 
         return redirect()->route('barang.index')->with('success', 'Barang berhasil ditambahkan.');
     }
@@ -68,7 +77,6 @@ class BarangController extends Controller
     {
         $request->validate([
             'kode_barang' => 'required|string|max:32|unique:barang,kode_barang,' . $id,
-            // 'nomor_sertifikat' => 'required|string|max:32|unique:pesertas,nomor_sertifikat,' . $id,
             'nama_barang' => 'required|string|max:32|unique:barang',
             'harga_beli' => 'required|numeric',
             'harga_jual' => 'required|numeric',
@@ -78,11 +86,13 @@ class BarangController extends Controller
         try {
             $barang = Barang::findOrFail($id);
             
+            $hargaJual = (1 + ($request->harga_jual/100)) * $request->harga_beli;
+            
             $barang->update([
                 'kode_barang' => $request->kode_barang,
                 'nama_barang' => $request->nama_barang,
                 'harga_beli' => $request->harga_beli,
-                'harga_jual' => $request->harga_jual,
+                'harga_jual' => $hargaJual,
                 'deskripsi' => $request->deskripsi,
             ]);
 
