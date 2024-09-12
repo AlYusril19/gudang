@@ -7,6 +7,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\OperatorBerandaController;
 use App\Http\Controllers\PembelianController;
 use App\Http\Controllers\PenjualanController;
+use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -65,6 +66,11 @@ Route::group(['middleware' => ['auth', 'role:admin']], function () {
     Route::get('/admin/customer/create', [CustomerController::class, 'create'])->name('customer.create');
     Route::post('/admin/customer', [CustomerController::class, 'store'])->name('customer.store');
     Route::delete('/admin/customer/{id}', [CustomerController::class, 'destroy'])->name('customer.destroy');
+
+    Route::get('/admin/supplier/index', [SupplierController::class, 'index'])->name('supplier.index');
+    Route::get('/admin/supplier/create', [SupplierController::class, 'create'])->name('supplier.create');
+    Route::post('/admin/supplier', [SupplierController::class, 'store'])->name('supplier.store');
+    Route::delete('/admin/supplier/{id}', [SupplierController::class, 'destroy'])->name('supplier.destroy');
 
 });
 

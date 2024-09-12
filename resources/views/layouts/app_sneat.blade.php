@@ -193,6 +193,21 @@
               </ul>
             </li>
 
+            <li class="menu-item {{ \Route::is('supplier.*') ? 'active open' : '' }}">
+              <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons bx bx-layout"></i>
+                <div data-i18n="Layouts">Supplier</div>
+              </a>
+
+              <ul class="menu-sub">
+                <li class="menu-item {{ \Route::is('supplier.index') ? 'active' : '' }}">
+                  <a href="{{ route('supplier.index') }}" class="menu-link">
+                    <div data-i18n="Without menu">Daftar Supplier</div>
+                  </a>
+                </li>
+              </ul>
+            </li>
+
             {{-- <li class="menu-item {{ \Route::is('pembelian.*') ? 'active open' : '' }}">
               <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons bx bx-layout"></i>

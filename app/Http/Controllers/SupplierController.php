@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Customer;
+use App\Models\Supplier;
 use Illuminate\Http\Request;
 
-class CustomerController extends Controller
+class SupplierController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $customers = Customer::all();
-        return view('admin.customer_index', compact('customers'));
+        $suppliers = Supplier::all();
+        return view('admin.supplier_index', compact('suppliers'));
     }
 
     /**
@@ -21,7 +21,7 @@ class CustomerController extends Controller
      */
     public function create()
     {
-        return view('admin.customer_create');
+        return view('admin.supplier_create');
     }
 
     /**
@@ -30,13 +30,16 @@ class CustomerController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama' => 'required|string|max:64|unique:customers',
-            'hp' => 'nullable',
+            'nama' => 'required|string|max:64|unique:supplier',
         ]);
 
-        Customer::create($request->all());
+        try {
+            Supplier::create($request->all());
 
-        return redirect()->route('customer.index')->with('success', 'Customer berhasil didaftarkan.');
+            return redirect()->route('supplier.index')->with('success', 'Supplier berhasil didaftarkan.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -68,9 +71,9 @@ class CustomerController extends Controller
      */
     public function destroy(string $id)
     {
-        $customers = Customer::findOrFail($id);
-        $customers->delete();
+        $suppliers = Supplier::findOrFail($id);
+        $suppliers->delete();
 
-        return redirect()->route('customer.index')->with('success', 'Customer berhasil dihapus');
+        return redirect()->route('supplier.index')->with('success', 'Supplier berhasil dihapus');
     }
 }

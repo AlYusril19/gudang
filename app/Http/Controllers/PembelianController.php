@@ -4,17 +4,35 @@ namespace App\Http\Controllers;
 
 use App\Models\Barang;
 use App\Models\Pembelian;
+use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class PembelianController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $pembelians = Pembelian::with('barang')->get();
+        $search = $request->input('search');
+
+        // Query untuk mengambil data pembelian
+        $query = Pembelian::with('supplier', 'pembelianBarang.barang')->orderBy('created_at', 'DESC');;
+
+        // Jika ada input pencarian
+        if ($search) {
+            $query->whereHas('supplier', function ($q) use ($search) {
+                $q->where('nama', 'like', "%$search%");
+            })
+            ->orWhere('tanggal_pembelian', 'like', "%$search%");
+        }
+
+        // Dapatkan hasil query
+        $pembelians = $query->get();
+
+        // Kirim hasil ke view
         return view('pembelian.index_pembelian', compact('pembelians'));
     }
 
@@ -23,8 +41,9 @@ class PembelianController extends Controller
      */
     public function create()
     {
+        $supplier = Supplier::all();
         $barang = Barang::all();
-        return view('pembelian.create_pembelian', compact('barang'));
+        return view('pembelian.create_pembelian', compact('barang', 'supplier'));
     }
 
     /**
@@ -33,27 +52,43 @@ class PembelianController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'barang_id' => 'required',
-            'jumlah' => 'required|integer',
-            'harga_beli' => 'required|numeric',
-            'tanggal_pembelian' => 'required|date',
+            'supplier_id' => 'required|exists:supplier,id',
+            'barang_ids' => 'required|array',
+            'barang_ids.*' => 'exists:barang,id',
+            'jumlah' => 'required|array',
+            'jumlah.*' => 'integer|min:1',
         ]);
 
         try {
-            // Menambah stok barang
-            $barang = Barang::find($request->barang_id);
-            $barang->stok += $request->jumlah;
+            DB::beginTransaction();
 
-            // Mengubah harga beli
-            $barang->harga_beli = $request->harga_beli/$request->jumlah;
-            $barang->save();
+            // Simpan data pembelian utama
+            $pembelian = Pembelian::create([
+                'supplier_id' => $request->supplier_id,
+                'tanggal_pembelian' => now(),
+            ]);
 
-            // Menyimpan data pembelian
-            Pembelian::create($request->all());
-            
-            return redirect()->route('pembelian.index')->with('success', 'Pembelian berhasil ditambahkan dan stok barang diperbarui.');
+            // Simpan detail pembelian (barang yang dijual)
+            foreach ($request->barang_ids as $index => $barangId) {
+                $barang = Barang::findOrFail($barangId);
+                
+                $pembelian->pembelianBarang()->create([
+                    'pembelian_id' => $pembelian->id,
+                    'barang_id' => $barangId,
+                    'jumlah' => $request->jumlah[$index],
+                    'harga_beli' => $barang->harga_beli,
+                ]);
+
+                // Update stok barang
+                $barang->stok += $request->jumlah[$index];
+                $barang->save();
+            }
+
+            DB::commit();
+            return redirect()->route('pembelian.index')->with('success', 'Pembelian berhasil disimpan.');
         } catch (\Exception $e) {
-            return redirect()->route('pembelian.create')->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
 
@@ -129,14 +164,31 @@ class PembelianController extends Controller
      */
     public function destroy(string $id)
     {
-        $pembelian = Pembelian::findOrFail($id);
-        // Kurangi stok barang sebelum menghapus
-        $barang = Barang::find($pembelian->barang_id);
-        $barang->stok -= $pembelian->jumlah;
-        $barang->save();
+        try {
+            DB::beginTransaction();
 
-        $pembelian->delete();
+            // Temukan data pembelian
+            $pembelian = Pembelian::findOrFail($id);
 
-        return redirect()->route('pembelian.index')->with('success', 'Pembelian berhasil dihapus dan stok barang diperbarui.');
+            // Kembalikan stok barang
+            foreach ($pembelian->pembelianBarang as $detail) {
+                $barang = Barang::find($detail->barang_id);
+                $barang->stok -= $detail->jumlah;
+                $barang->save();
+            }
+
+            // Hapus detail pembelian
+            $pembelian->pembelianBarang()->delete();
+
+            // Hapus data pembelian utama
+            $pembelian->delete();
+
+            DB::commit();
+
+            return redirect()->route('pembelian.index')->with('success', 'Data Pembelian berhasil dihapus.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 }

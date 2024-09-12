@@ -7,23 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class Pembelian extends Model
 {
-    use HasFactory;
-
     protected $table = 'pembelian';
+    protected $fillable = ['supplier_id', 'tanggal_pembelian', 'total_harga'];
 
-    protected $fillable = [
-        'barang_id',
-        'jumlah',
-        'harga_beli',
-        'tanggal_pembelian',
-    ];
-    protected $casts = [
-        'tanggal_pembelian' => 'datetime',
-    ];
-
-    // Relasi dengan model Barang
-    public function barang()
+    public function pembelianBarang()
     {
-        return $this->belongsTo(Barang::class);
+        return $this->hasMany(PembelianBarang::class);
+    }
+
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class);
     }
 }

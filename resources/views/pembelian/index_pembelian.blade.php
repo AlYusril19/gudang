@@ -1,11 +1,19 @@
 @extends('layouts.app_sneat')
 
 @section('content')
-    {{-- <h5 class="pb-1 mb-6">Data Peserta</h5> --}}
     <div class="card">
+        {{-- <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Daftar Barang Keluar</h5>
+            <a href="{{ route('pembelian.create') }}" class="btn btn-primary mb-0">Barang Keluar</a>
+        </div> --}}
         <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Daftar Barang Masuk</h5>
-            <a href="{{ route('pembelian.create') }}" class="btn btn-primary mb-0">Barang Masuk</a>
+            <a href="{{ route('pembelian.create') }}" class="btn btn-primary mb-0">Barang Keluar</a>
+            <div class=" align-items-center">
+                <form action="{{ route('pembelian.index') }}" method="GET" class="d-flex me-2">
+                    <input type="text" name="search" class="form-control me-2" placeholder="Cari Supplier / Bulan" value="{{ request('search') }}">
+                    <button type="submit" class="btn btn-primary">Cari</button>
+                </form>
+            </div>
         </div>
         <div class="text-nowrap table-responsive">
             <table class="table">
@@ -15,21 +23,31 @@
                 <thead>
                     <tr>
                         <th>No</th>
-                        <th>Nama Barang</th>
-                        <th>Harga Beli</th>
-                        <th>Jumlah</th>
                         <th>Tanggal Pembelian</th>
+                        <th>Supplier</th>
+                        <th>Barang</th>
+                        <th>Jumlah</th>
+                        <th>Total Harga</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="table-border-bottom-0">
-                    @foreach($pembelians as $pembelian)
+                    @foreach ($pembelians as $p)
                         <tr>
                             <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>{{ $loop->iteration }}</strong></td>
-                            <td>{{ $pembelian->barang->nama_barang }}</td>
-                            <td>{{ formatRupiah($pembelian->harga_beli) }}</td>
-                            <td>{{ $pembelian->jumlah }}</td>
-                            <td>{{ $pembelian->tanggal_pembelian->format('Y-m-d') }}</td>
+                            <td>{{ $p->tanggal_pembelian }}</td>
+                            <td>{{ $p->supplier->nama }}</td>
+                            <td>
+                                @foreach ($p->pembelianBarang as $barang)
+                                    {{ $barang->barang->nama_barang }} ({{ $barang->jumlah }} pcs)<br>
+                                @endforeach
+                            </td>
+                            <td>
+                                @foreach ($p->pembelianBarang as $barang)
+                                    {{ formatRupiah($barang->harga_beli * $barang->jumlah) }}<br>
+                                @endforeach
+                            </td>
+                            <td>{{ formatRupiah($p->pembelianBarang->sum(fn($barang) => $barang->harga_beli * $barang->jumlah)) }}</td>
                             <td>
                                 <div class="dropdown">
                                     <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
@@ -37,8 +55,8 @@
                                     </button>
                                     <div class="dropdown-menu">
                                         {{-- <a class="dropdown-item" href="{{ route('barang.show', $barang->id) }}"><i class="bx bx-show-alt me-2"></i> Show</a> --}}
-                                        <a class="dropdown-item" href="{{ route('pembelian.edit', $pembelian->id) }}"><i class="bx bx-edit-alt me-2"></i> Edit</a>
-                                        <form action="{{ route('pembelian.destroy', $pembelian->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?');">
+                                        {{-- <a class="dropdown-item" href="{{ route('pembelian.edit', $pembelian->id) }}"><i class="bx bx-edit-alt me-2"></i> Edit</a> --}}
+                                        <form action="{{ route('pembelian.destroy', $p->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="dropdown-item"><i class="bx bx-trash me-1"></i> Delete</button>

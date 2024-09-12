@@ -15,12 +15,25 @@ class PenjualanController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Ambil semua data penjualan dengan relasi ke customer dan barang
-        $penjualan = Penjualan::with('customer', 'penjualanBarang.barang')->get();
+        $search = $request->input('search');
 
-        // Kirim data penjualan ke view
+        // Query untuk mengambil data penjualan
+        $query = Penjualan::with('customer', 'penjualanBarang.barang')->orderBy('created_at', 'DESC');;
+
+        // Jika ada input pencarian
+        if ($search) {
+            $query->whereHas('customer', function ($q) use ($search) {
+                $q->where('nama', 'like', "%$search%");
+            })
+            ->orWhere('tanggal_penjualan', 'like', "%$search%");
+        }
+
+        // Dapatkan hasil query
+        $penjualan = $query->get();
+
+        // Kirim hasil ke view
         return view('penjualan.index_penjualan', compact('penjualan'));
     }
 

@@ -25,4 +25,10 @@ class Barang extends Model
                     ->withPivot('jumlah', 'harga_jual')
                     ->withTimestamps();
     }
+    public function pembelians()
+    {
+        return $this->belongsToMany(Penjualan::class, 'pembelian_barang')
+                    ->withPivot('jumlah', 'harga_beli')
+                    ->withTimestamps();
+    }
 }
