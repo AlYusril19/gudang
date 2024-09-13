@@ -19,6 +19,17 @@
                             </div>
                         </div>
                         <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label" for="nama_barang">Kategori</label>
+                            <div class="col-sm-10">
+                                <select name="kategori_id" id="kategori_id" class="form-control select2">
+                                    <option value="">--Pilih Kategori--</option>
+                                    @foreach($kategoris as $kategori)
+                                        <option value="{{ $kategori->id }}">{{ $kategori->nama_kategori }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
                             <label class="col-sm-2 col-form-label" for="kode_barang">Kode Barang</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" id="kode_barang" name="kode_barang" value="{{ $barang->kode_barang }}" required>

@@ -19,6 +19,11 @@ class Barang extends Model
         'harga_jual',
         'stok',
     ];
+    public function kategori()
+    {
+        return $this->belongsTo(Kategori::class);
+    }
+
     public function penjualans()
     {
         return $this->belongsToMany(Penjualan::class, 'penjualan_barang')

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Barang;
+use App\Models\Kategori;
 use Illuminate\Http\Request;
 
 class BarangController extends Controller
@@ -32,7 +33,8 @@ class BarangController extends Controller
      */
     public function create()
     {
-        return view('barang.create_barang');
+        $kategoris = Kategori::all();
+        return view('barang.create_barang', compact('kategoris'));
     }
 
     /**
@@ -43,6 +45,7 @@ class BarangController extends Controller
         $request->validate([
             // 'kode_barang' => 'required|string|max:32|unique:barang',
             'nama_barang' => 'required|string|max:32|unique:barang',
+            'kategori_id' => 'nullable|exists:kategori,id',
             'harga_beli' => 'required|numeric',
             'harga_jual' => 'required|numeric',
             'deskripsi' => 'required|string|max:1024',
@@ -56,6 +59,7 @@ class BarangController extends Controller
         Barang::create([
             'kode_barang' => $kodeBarang,
             'nama_barang' => $request->nama_barang,
+            'kategori_id' => $request->kategori_id,
             'harga_beli' => $request->harga_beli,
             'harga_jual' => $hargaJual,
             'deskripsi' => $request->deskripsi,
@@ -79,7 +83,8 @@ class BarangController extends Controller
     public function edit(string $id)
     {
         $barang = Barang::findOrFail($id);
-        return view('barang.edit_barang', compact('barang'));
+        $kategoris =Kategori::all();
+        return view('barang.edit_barang', compact('barang', 'kategoris'));
     }
 
     /**
@@ -89,7 +94,8 @@ class BarangController extends Controller
     {
         $request->validate([
             'kode_barang' => 'required|string|max:32|unique:barang,kode_barang,' . $id,
-            'nama_barang' => 'required|string|max:32|unique:barang',
+            'nama_barang' => 'required|string|max:32|unique:barang' . $id,
+            'kategori_id' => 'nullable|exists:kategori,id',
             'harga_beli' => 'required|numeric',
             'harga_jual' => 'required|numeric',
             'deskripsi' => 'required|string|max:1024',
@@ -103,6 +109,7 @@ class BarangController extends Controller
             $barang->update([
                 'kode_barang' => $request->kode_barang,
                 'nama_barang' => $request->nama_barang,
+                'kategori_id' => $request->kategori_id,
                 'harga_beli' => $request->harga_beli,
                 'harga_jual' => $hargaJual,
                 'deskripsi' => $request->deskripsi,

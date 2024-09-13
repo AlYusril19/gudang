@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminBerandaController;
 use App\Http\Controllers\Api\StokBarangController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\OperatorBerandaController;
 use App\Http\Controllers\PembelianController;
 use App\Http\Controllers\PenjualanController;
@@ -46,12 +47,14 @@ Route::group(['middleware' => ['auth', 'role:admin']], function () {
     Route::get('/admin/barang/{id}/show', [BarangController::class, 'show'])->name('barang.show');
     Route::get('/admin/barang/{id}/edit', [BarangController::class, 'edit'])->name('barang.edit');
     Route::put('/admin/barang/{id}/edit', [BarangController::class, 'update'])->name('barang.update');
+    Route::get('/admin/kategori/create', [KategoriController::class, 'create'])->name('kategori.create');
+    Route::post('/admin/kategori', [KategoriController::class, 'store'])->name('kategori.store');
+    Route::get('/admin/kategori/index', [KategoriController::class, 'index'])->name('kategori.index');
+    Route::delete('/admin/kategori/{id}', [KategoriController::class, 'destroy'])->name('kategori.destroy');
 
     Route::get('/admin/barang_masuk/index', [PembelianController::class, 'index'])->name('pembelian.index');
     Route::get('/admin/barang_masuk/create', [PembelianController::class, 'create'])->name('pembelian.create');
     Route::post('/admin/barang_masuk', [PembelianController::class, 'store'])->name('pembelian.store');
-    Route::get('/admin/barang_masuk/{id}/edit', [PembelianController::class, 'edit'])->name('pembelian.edit');
-    Route::put('/admin/barang_masuk/{id}/edit', [PembelianController::class, 'update'])->name('pembelian.update');
     Route::delete('/admin/barang_masuk/{id}', [PembelianController::class, 'destroy'])->name('pembelian.destroy');
     Route::get('/admin/barang_masuk/harga-beli', [PembelianController::class, 'getHargaBeli'])->name('pembelian.getHargaBeli');
 

@@ -12,17 +12,22 @@
                     <form method="POST" action="{{ route('barang.store') }}" enctype="multipart/form-data">
                         @csrf
                         <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label" for="nama_barang">Kategori</label>
+                            <div class="col-sm-10">
+                                <select name="kategori_id" id="kategori_id" class="form-control select2">
+                                    <option value="">--Pilih Kategori--</option>
+                                    @foreach($kategoris as $kategori)
+                                        <option value="{{ $kategori->id }}">{{ $kategori->nama_kategori }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
                             <label class="col-sm-2 col-form-label" for="nama_barang">Nama Barang</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" id="nama_barang" name="nama_barang" placeholder="Tenda N301" required>
                             </div>
                         </div>
-                        {{-- <div class="row mb-3">
-                            <label class="col-sm-2 col-form-label" for="kode_barang">Kode Barang</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" id="kode_barang" name="kode_barang" placeholder="K-001" required>
-                            </div>
-                        </div> --}}
                         <div class="row mb-3">
                             <label class="col-sm-2 col-form-label" for="harga_beli">Harga Beli</label>
                             <div class="col-sm-10">

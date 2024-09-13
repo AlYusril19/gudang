@@ -113,9 +113,7 @@ class PembelianController extends Controller
      */
     public function edit(string $id)
     {
-        $pembelian = Pembelian::findOrFail($id);
-        $barang = Barang::all();
-        return view('pembelian.edit_pembelian', compact('pembelian', 'barang'));
+        // 
     }
 
     /**
@@ -123,48 +121,7 @@ class PembelianController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $request->validate([
-            'barang_id' => 'required|exists:barang,id',
-            'jumlah' => 'required|integer|min:1',
-            'harga_beli' => 'required|numeric',
-            'tanggal_pembelian' => 'required|date',
-        ]);
-        
-        try {
-            // Temukan data pembelian berdasarkan ID
-            $pembelian = Pembelian::findOrFail($id);
-
-            // Simpan jumlah lama sebelum pembaruan
-            $oldJumlah = $pembelian->jumlah;
-
-            // Temukan barang berdasarkan ID
-            $barang = Barang::findOrFail($request->barang_id);
-
-            // Hitung stok baru
-            $newJumlah = $request->jumlah;
-            $stokBaru = $barang->stok - $oldJumlah + $newJumlah;
-
-            // Cek apakah stok tidak menjadi negatif
-            if ($stokBaru < 0) {
-                return redirect()->back()->withErrors(['msg' => 'Stok tidak bisa kurang dari 0.']);
-            }
-
-            // Update stok barang
-            $barang->stok = $stokBaru;
-            $barang->save();
-
-            // Update data pembelian dengan field tertentu
-            $pembelian->update([
-                'barang_id' => $request->barang_id,
-                'jumlah' => $newJumlah,
-                'harga_beli' => $request->harga_beli,
-                'tanggal_pembelian' => $request->tanggal_pembelian,
-            ]);
-
-            return redirect()->route('pembelian.index')->with('success', 'Barang masuk berhasil diperbarui.');
-        } catch (\Exception $e) {
-            return redirect()->route('pembelian.index')->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
-        }
+        // 
     }
 
     /**
@@ -210,5 +167,5 @@ class PembelianController extends Controller
         }
         return response()->json(['error' => 'Barang tidak ditemukan'], 404);
     }
-    
+
 }

@@ -154,12 +154,18 @@
             </li>
 
             <!-- Layouts -->
-            <li class="menu-item {{ \Route::is('barang.*') || \Route::is('pembelian.*') || \Route::is('penjualan.*') ? 'active open' : '' }}">
+            <li class="menu-item {{ \Route::is('barang.*') ||\Route::is('kategori.*') || \Route::is('pembelian.*') || \Route::is('penjualan.*') ? 'active open' : '' }}">
               <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons bx bx-package"></i>
                 <div data-i18n="Layouts">Data Barang</div>
               </a>
-
+              <ul class="menu-sub">
+                <li class="menu-item {{ \Route::is('kategori.*') ? 'active' : '' }}">
+                  <a href="{{ route('kategori.index') }}" class="menu-link">
+                    <div data-i18n="Without menu">Daftar Kategori</div>
+                  </a>
+                </li>
+              </ul>
               <ul class="menu-sub">
                 <li class="menu-item {{ \Route::is('barang.*') ? 'active' : '' }}">
                   <a href="{{ route('barang.index') }}" class="menu-link">
