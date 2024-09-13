@@ -1,72 +1,76 @@
 @extends('layouts.app_sneat')
 
 @section('content')
-<form action="{{ route('penjualan.store') }}" method="POST" id="form-penjualan">
-    @csrf
-    <!-- Customer Selection -->
-    <div class="form-group">
-        <label for="customer_id">Customer</label>
-        <select name="customer_id" id="customer_id" class="form-control">
-            @foreach($customers as $customer)
-                <option value="{{ $customer->id }}">{{ $customer->nama }}</option>
-            @endforeach
-        </select>
+<div class="card">
+    <div class="card-body">
+        <form action="{{ route('penjualan.store') }}" method="POST" id="form-penjualan">
+            @csrf
+            <!-- Customer Selection -->
+            <div class="form-group">
+                <label for="customer_id">Customer</label>
+                <select name="customer_id" id="customer_id" class="form-control">
+                    @foreach($customers as $customer)
+                        <option value="{{ $customer->id }}">{{ $customer->nama }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <!-- Barang Selection -->
+            <div class="form-group mt-2">
+                <label for="barang_id">Barang</label>
+                <select name="barang_id" id="barang_id" class="form-control">
+                    <option value="">Pilih Barang</option>
+                    @foreach($barang as $b)
+                        <option value="{{ $b->id }}" data-harga="{{ $b->harga_jual }}">{{ $b->nama_barang }} | {{ formatRupiah($b->harga_jual) }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <!-- Display Available Stock -->
+            <div class="form-group mt-2">
+                <label for="stok">Stok Tersedia</label>
+                <input type="number" id="stok" class="form-control" disabled>
+            </div>
+
+            <!-- Jumlah Input -->
+            <div class="form-group mt-2">
+                <label for="jumlah">Jumlah</label>
+                <input type="number" name="jumlah" id="jumlah" class="form-control" value="1" min="1">
+            </div>
+
+            <!-- Button to Add Barang -->
+            <button type="button" id="btn-tambah-barang" class="btn btn-primary mt-2">Tambah Barang</button>
+
+            <!-- Table of Added Barang -->
+            <table class="table table-bordered mt-3" id="daftar-barang">
+                <thead>
+                    <tr>
+                        <th>Barang</th>
+                        <th>Jumlah</th>
+                        <th>Harga Jual</th>
+                        <th>Total Harga</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+
+            <!-- Total Harga Jual -->
+            <div class="form-group">
+                <label>Total Harga Jual</label>
+                <input type="text" id="total-harga-jual" class="form-control" readonly>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" id="btn-submit-penjualan" class="btn btn-success mt-2">Simpan Penjualan</button>
+        </form>
     </div>
+</div>
 
-    <!-- Barang Selection -->
-    <div class="form-group">
-        <label for="barang_id">Barang</label>
-        <select name="barang_id" id="barang_id" class="form-control">
-            <option value="">Pilih Barang</option>
-            @foreach($barang as $b)
-                <option value="{{ $b->id }}" data-harga="{{ $b->harga_jual }}">{{ $b->nama_barang }}</option>
-            @endforeach
-        </select>
-    </div>
+@endsection
 
-    <!-- Display Available Stock -->
-    <div class="form-group">
-        <label for="stok">Stok Tersedia</label>
-        <input type="number" id="stok" class="form-control" disabled>
-    </div>
-
-    <!-- Jumlah Input -->
-    <div class="form-group">
-        <label for="jumlah">Jumlah</label>
-        <input type="number" name="jumlah" id="jumlah" class="form-control" value="1" min="1">
-    </div>
-
-    <!-- Button to Add Barang -->
-    <button type="button" id="btn-tambah-barang" class="btn btn-primary">Tambah Barang</button>
-
-    <!-- Table of Added Barang -->
-    <table class="table table-bordered" id="daftar-barang">
-        <thead>
-            <tr>
-                <th>Barang</th>
-                <th>Jumlah</th>
-                <th>Harga Jual</th>
-                <th>Total Harga</th>
-                <th>Aksi</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-
-    <!-- Total Harga Jual -->
-    <div class="form-group">
-        <label>Total Harga Jual</label>
-        <input type="text" id="total-harga-jual" class="form-control" readonly>
-    </div>
-
-    <!-- Submit Button -->
-    <button type="submit" id="btn-submit-penjualan" class="btn btn-success">Simpan Penjualan</button>
-</form>
-
-<!-- Include jQuery -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<!-- AJAX Code -->
+@section('js')
+    <!-- AJAX Code -->
 <script>
     $(document).ready(function() {
         function updateTotalHargaJual() {

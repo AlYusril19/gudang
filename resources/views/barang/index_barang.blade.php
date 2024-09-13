@@ -4,8 +4,13 @@
     {{-- <h5 class="pb-1 mb-6">Data Peserta</h5> --}}
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Daftar Item Barang</h5>
             <a href="{{ route('barang.create') }}" class="btn btn-primary mb-0">Tambah Item</a>
+            <div class=" align-items-center">
+                <form action="{{ route('barang.index') }}" method="GET" class="d-flex me-2">
+                    <input type="text" name="search" class="form-control me-2" placeholder="Cari Barang" value="{{ request('search') }}">
+                    <button type="submit" class="btn btn-primary">Cari</button>
+                </form>
+            </div>
         </div>
         <div class="text-nowrap table-responsive">
             <table class="table">

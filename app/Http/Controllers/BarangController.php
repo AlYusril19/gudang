@@ -15,8 +15,16 @@ class BarangController extends Controller
         $orderBy = $request->get('order_by', 'nama_barang');  // Default sorting by nama_barang
         $direction = $request->get('direction', 'asc');       // Default direction is ascending
 
-        $barangs = Barang::orderBy($orderBy, $direction)->get();
-        return view('barang.index_barang', compact('barangs', 'orderBy', 'direction'));
+        $search = $request->get('search');  // Ambil parameter pencarian
+
+        // Query dengan pencarian dan pengurutan
+        $barangs = Barang::when($search, function ($query, $search) {
+                return $query->where('nama_barang', 'like', "%{$search}%");
+            })
+            ->orderBy($orderBy, $direction)
+            ->get();
+
+        return view('barang.index_barang', compact('barangs', 'orderBy', 'direction', 'search'));
     }
 
     /**
@@ -32,8 +40,9 @@ class BarangController extends Controller
      */
     public function store(Request $request)
     {
+        dd($request->deskripsi);
         $request->validate([
-            'kode_barang' => 'required|string|max:32|unique:barang',
+            // 'kode_barang' => 'required|string|max:32|unique:barang',
             'nama_barang' => 'required|string|max:32|unique:barang',
             'harga_beli' => 'required|numeric',
             'harga_jual' => 'required|numeric',
@@ -41,8 +50,12 @@ class BarangController extends Controller
         ]);
         $hargaJual = (1 + ($request->harga_jual/100)) * $request->harga_beli;
 
+        $kodeBarang = Barang::latest('id')->value('id');
+        $kodeBarang = $kodeBarang ? $kodeBarang + 1 : 1;
+        $kodeBarang = "K-" . str_pad($kodeBarang, 3, '0', STR_PAD_LEFT);
+
         Barang::create([
-            'kode_barang' => $request->kode_barang,
+            'kode_barang' => $kodeBarang,
             'nama_barang' => $request->nama_barang,
             'harga_beli' => $request->harga_beli,
             'harga_jual' => $hargaJual,

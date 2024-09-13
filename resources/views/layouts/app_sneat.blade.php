@@ -54,6 +54,11 @@
     <link rel="stylesheet" href="{{ asset('sneat') }}/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
 
     <link rel="stylesheet" href="{{ asset('sneat') }}/assets/vendor/libs/apex-charts/apex-charts.css" />
+    <link rel="stylesheet" href="{{ asset('sneat') }}/assets/vendor/libs/select2/select2.css" />
+    <link rel="stylesheet" href="{{ asset('sneat') }}/assets/vendor/libs/quill/typography.css" />
+    <link rel="stylesheet" href="{{ asset('sneat') }}/assets/vendor/libs/quill/katex.css" />
+    <link rel="stylesheet" href="{{ asset('sneat') }}/assets/vendor/libs/quill/editor.css" />
+    {{-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /> --}}
 
     <!-- Page CSS -->
 
@@ -156,21 +161,21 @@
               </a>
 
               <ul class="menu-sub">
-                <li class="menu-item {{ \Route::is('barang.index') ? 'active' : '' }}">
+                <li class="menu-item {{ \Route::is('barang.*') ? 'active' : '' }}">
                   <a href="{{ route('barang.index') }}" class="menu-link">
                     <div data-i18n="Without menu">Daftar Barang</div>
                   </a>
                 </li>
               </ul>
               <ul class="menu-sub">
-                <li class="menu-item {{ \Route::is('pembelian.index') ? 'active' : '' }}">
+                <li class="menu-item {{ \Route::is('pembelian.*') ? 'active' : '' }}">
                   <a href="{{ route('pembelian.index') }}" class="menu-link">
                     <div data-i18n="Without menu">Daftar Pembelian</div>
                   </a>
                 </li>
               </ul>
               <ul class="menu-sub">
-                <li class="menu-item {{ \Route::is('penjualan.index') ? 'active' : '' }}">
+                <li class="menu-item {{ \Route::is('penjualan.*') ? 'active' : '' }}">
                   <a href="{{ route('penjualan.index') }}" class="menu-link">
                     <div data-i18n="Without menu">Daftar Penjualan</div>
                   </a>
@@ -437,6 +442,9 @@
     <!-- endbuild -->
 
     <!-- Vendors JS -->
+    <script src="{{ asset('sneat') }}/assets/vendor/libs/quill/katex.js" /></script>
+    <script src="{{ asset('sneat') }}/assets/vendor/libs/quill/quill.js" /></script>
+    <script src="{{ asset('sneat') }}/assets/vendor/libs/select2/select2.js"></script>
     <script src="{{ asset('sneat') }}/assets/vendor/libs/apex-charts/apexcharts.js"></script>
 
     <!-- Main JS -->
@@ -445,9 +453,8 @@
     <!-- Page JS -->
     <script src="{{ asset('sneat') }}/assets/js/dashboards-analytics.js"></script>
 
-    <!-- Place this tag in your head or just before your close body tag. -->
-    <script async defer src="https://buttons.github.io/buttons.js"></script>
-    {{-- Format Rupiah --}}
+    @yield('js')
+
     <script>
       function formatRupiahJS(angka) {
           var reverse = angka.toString().split('').reverse().join('');
@@ -456,5 +463,15 @@
           return 'Rp ' + ribuan;
       }
     </script>
+    <script>
+      $(document).ready(function() {
+        $('.select2').select2();
+      });
+    </script>
+
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    {{-- Format Rupiah --}}
+    
   </body>
 </html>

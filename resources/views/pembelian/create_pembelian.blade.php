@@ -1,99 +1,113 @@
 @extends('layouts.app_sneat')
 
 @section('content')
-<form action="{{ route('pembelian.store') }}" method="POST" id="form-pembelian">
-    @csrf
-    <!-- Supplier Selection -->
-    <div class="form-group">
-        <label for="supplier_id">Supplier</label>
-        <div class="d-flex">
-            <select name="supplier_id" id="supplier_id" class="form-control">
-                @foreach($suppliers as $supplier)
-                    <option value="{{ $supplier->id }}">{{ $supplier->nama }}</option>
-                @endforeach
-            </select>
-            <button type="button" class="btn btn-primary ml-2" data-bs-toggle="modal" data-bs-target="#modalSupplier">Tambah Supplier</button>
-        </div>
-    </div>
-
-    <!-- Barang Selection -->
-    <div class="form-group mt-2">
-        <label for="barang_id">Barang</label>
-        <select name="barang_id" id="barang_id" class="form-control">
-            <option value="">--Pilih Barang--</option>
-            @foreach($barang as $b)
-                <option value="{{ $b->id }}">{{ $b->nama_barang }} | {{ formatRupiah($b->harga_beli) }}</option>
-            @endforeach
-        </select>
-    </div>
-
-    <!-- Jumlah Input -->
-    <div class="form-group mt-2">
-        <label for="jumlah">Jumlah</label>
-        <input type="number" name="jumlah" id="jumlah" class="form-control" value="1" min="1">
-    </div>
-
-    <!-- Harga Beli Input -->
-    <div class="form-group mt-2">
-        <label for="harga_beli">Harga Beli</label>
-        <input type="number" name="harga_beli" id="harga_beli" class="form-control" placeholder="150000" min="1">
-    </div>
-
-
-    <!-- Button to Add Barang -->
-    <button type="button" id="btn-tambah-barang" class="btn btn-primary mt-2">Tambah Barang</button>
-
-    <!-- Table of Added Barang -->
-    <div class="table table-responsive">
-        <table class="table table-striped mt-3" id="daftar-barang">
-            <thead>
-                <tr>
-                    <th>Barang</th>
-                    <th>Jumlah</th>
-                    <th>Harga Beli</th>
-                    <th>Total Harga</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody class="table-border-bottom-0"></tbody>
-        </table>
-    </div>
-
-    <!-- Total Harga Jual -->
-    <div class="form-group mt-2">
-        <label>Total Harga Jual</label>
-        <input type="text" id="total-harga-beli" class="form-control" readonly>
-    </div>
-
-    <!-- Submit Button -->
-    <button type="submit" id="btn-submit-pembelian" class="btn btn-success mt-2">Simpan Pembelian</button>
-</form>
-
-<!-- Modal for Adding Supplier -->
-<div class="modal fade" id="modalSupplier" tabindex="-1" aria-labelledby="modalSupplierLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalSupplierLabel">Tambah Supplier Baru</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<div class="card">
+    <div class="card-body">
+        <form action="{{ route('pembelian.store') }}" method="POST" id="form-pembelian">
+            @csrf
+            <!-- Supplier Selection -->
+            <div class="form-group">
+                <label for="supplier_id">Supplier</label>
+                <select name="supplier_id" id="supplier_id" class="form-control select2" onchange="handleSupplierChange()">
+                    <option value="">--Pilih Supplier--</option>
+                    @foreach($suppliers as $supplier)
+                        <option value="{{ $supplier->id }}">{{ $supplier->nama }}</option>
+                    @endforeach
+                    <option value="other">Other</option> <!-- Opsi Other -->
+                </select>
             </div>
-            <div class="modal-body">
-                <form id="form-tambah-supplier">
-                    @csrf
-                    <div class="form-group">
-                        <label for="nama">Nama Supplier</label>
-                        <input type="text" name="nama" id="nama" class="form-control" required>
+
+            <!-- Barang Selection -->
+            <div class="form-group mt-2">
+                <label for="barang_id">Barang</label>
+                <select name="barang_id" id="barang_id" class="form-control select2">
+                    <option value="">--Pilih Barang--</option>
+                    @foreach($barang as $b)
+                        <option value="{{ $b->id }}">{{ $b->nama_barang }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <!-- Jumlah Input -->
+            <div class="form-group mt-2">
+                <label for="jumlah">Jumlah</label>
+                <input type="number" name="jumlah" id="jumlah" class="form-control" value="1" min="1">
+            </div>
+
+            <!-- Harga Beli Input -->
+            <div class="form-group mt-2">
+                <label for="harga_beli">Harga Beli</label>
+                <input type="number" name="harga_beli" id="harga_beli" class="form-control" placeholder="150000" min="1">
+            </div>
+
+
+            <!-- Button to Add Barang -->
+            <button type="button" id="btn-tambah-barang" class="btn btn-primary mt-2">Tambah Barang</button>
+
+            <!-- Table of Added Barang -->
+            <div class="table table-responsive">
+                <table class="table table-striped mt-3" id="daftar-barang">
+                    <thead>
+                        <tr>
+                            <th>Barang</th>
+                            <th>Jumlah</th>
+                            <th>Harga Beli</th>
+                            <th>Total Harga</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-border-bottom-0"></tbody>
+                </table>
+            </div>
+
+            <!-- Total Harga Jual -->
+            <div class="form-group mt-2">
+                <label>Total Harga Jual</label>
+                <input type="text" id="total-harga-beli" class="form-control" readonly>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" id="btn-submit-pembelian" class="btn btn-success mt-2">Simpan Pembelian</button>
+        </form>
+
+        <!-- Modal for Adding Supplier -->
+        <div class="modal fade" id="modalSupplier" tabindex="-1" aria-labelledby="modalSupplierLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalSupplierLabel">Tambah Supplier Baru</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <button type="submit" class="btn btn-primary">Simpan</button>
-                </form>
+                    <div class="modal-body">
+                        <form id="form-tambah-supplier">
+                            @csrf
+                            <div class="form-group">
+                                <label for="nama">Nama Supplier</label>
+                                <input type="text" name="nama" id="nama" class="form-control" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Simpan</button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> --}}
 
+@endsection
+
+@section('js')
 <script>
+    // Function to handle supplier selection
+    function handleSupplierChange() {
+        var select = document.getElementById('supplier_id');
+        if (select.value === 'other') {
+            // Munculkan modal tambah supplier
+            $('#modalSupplier').modal('show');
+        }
+    }
     $(document).ready(function() {
         // Function to fetch and update harga_beli based on selected barang
         $('#barang_id').on('change', function() {
@@ -283,5 +297,4 @@
         });
     });
 </script>
-
 @endsection

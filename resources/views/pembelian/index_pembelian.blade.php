@@ -2,10 +2,6 @@
 
 @section('content')
     <div class="card">
-        {{-- <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Daftar Barang Keluar</h5>
-            <a href="{{ route('pembelian.create') }}" class="btn btn-primary mb-0">Barang Keluar</a>
-        </div> --}}
         <div class="card-header d-flex justify-content-between align-items-center">
             <a href="{{ route('pembelian.create') }}" class="btn btn-primary mb-0">Barang Masuk</a>
             <div class=" align-items-center">
