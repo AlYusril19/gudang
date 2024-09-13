@@ -40,7 +40,6 @@ class BarangController extends Controller
      */
     public function store(Request $request)
     {
-        dd($request->deskripsi);
         $request->validate([
             // 'kode_barang' => 'required|string|max:32|unique:barang',
             'nama_barang' => 'required|string|max:32|unique:barang',
