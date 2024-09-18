@@ -11,13 +11,17 @@ class Barang extends Model
 
     protected $table = 'barang';
 
+    const STATUS_AKTIF = 'aktif';
+    const STATUS_ARSIP = 'arsip';
     protected $fillable = [
         'kode_barang',
+        'kategori_id',
         'nama_barang',
         'deskripsi',
         'harga_beli',
         'harga_jual',
         'stok',
+        'status',
     ];
     public function kategori()
     {

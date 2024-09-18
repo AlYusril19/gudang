@@ -45,17 +45,22 @@
                                 @endif
                             </a>
                         </th>
+                        <th>Status</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="table-border-bottom-0">
                     @foreach($barangs as $barang)
-                        <tr>
+                        <tr id="barang-{{ $barang->id }}">
                             <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>{{ $loop->iteration }}</strong></td>
                             <td>{{ $barang->nama_barang }}</td>
                             <td>{{ formatRupiah($barang->harga_beli) }}</td>
                             <td>{{ formatRupiah($barang->harga_jual) }}</td>
                             <td>{{ $barang->stok }}</td>
+                            <td>
+                                <input type="checkbox" class="toggle-status" data-id="{{ $barang->id }}" {{ $barang->status == 'aktif' ? 'checked' : '' }}>
+                                <span class="status-label">{{ $barang->status == 'aktif' ? 'Aktif' : 'Arsip' }}</span>
+                            </td>
                             <td>
                                 <div class="dropdown">
                                     <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
@@ -80,4 +85,34 @@
         </div>
     </div>
     <hr class="my-12">
+@endsection
+
+@section('js')
+    <script>
+        $(document).on('change', '.toggle-status', function() {
+            var id = $(this).data('id');
+            var status = $(this).is(':checked') ? 'aktif' : 'arsip';
+
+            $.ajax({
+                url: '{{ route('barang.toggleStatus') }}',
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    id: id,
+                    status: status
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Update status label text without refreshing
+                        $('#barang-' + id).find('.status-label').text(status == 'aktif' ? 'Aktif' : 'Arsip');
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function() {
+                    alert('Terjadi kesalahan saat mengubah status.');
+                }
+            });
+        });
+    </script>
 @endsection

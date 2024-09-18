@@ -29,8 +29,7 @@ Route::get('/', function () {
 
 Auth::routes();
 
-// Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
+// Role User Admin
 Route::group(['middleware' => ['auth', 'role:admin']], function () {
     // Route untuk admin
     Route::get('/admin/dashboard', [AdminBerandaController::class, 'index'])->name('admin.index');
@@ -47,6 +46,8 @@ Route::group(['middleware' => ['auth', 'role:admin']], function () {
     Route::get('/admin/barang/{id}/show', [BarangController::class, 'show'])->name('barang.show');
     Route::get('/admin/barang/{id}/edit', [BarangController::class, 'edit'])->name('barang.edit');
     Route::put('/admin/barang/{id}/edit', [BarangController::class, 'update'])->name('barang.update');
+    Route::post('/admin/barang/toggle-status', [BarangController::class, 'toggleStatus'])->name('barang.toggleStatus');
+    
     Route::get('/admin/kategori/create', [KategoriController::class, 'create'])->name('kategori.create');
     Route::post('/admin/kategori', [KategoriController::class, 'store'])->name('kategori.store');
     Route::get('/admin/kategori/index', [KategoriController::class, 'index'])->name('kategori.index');
@@ -75,10 +76,14 @@ Route::group(['middleware' => ['auth', 'role:admin']], function () {
     Route::get('/admin/supplier/create', [SupplierController::class, 'create'])->name('supplier.create');
     Route::post('/admin/supplier', [SupplierController::class, 'store'])->name('supplier.store');
     Route::delete('/admin/supplier/{id}', [SupplierController::class, 'destroy'])->name('supplier.destroy');
-
 });
 
 Route::group(['middleware' => ['auth', 'role:operator']], function () {
     // Route untuk operator
     Route::get('/operator', [OperatorBerandaController::class, 'index']);
+});
+
+Route::group(['middleware' => ['auth', 'role:staff']], function () {
+    // Route untuk staff
+    Route::get('/staff', [OperatorBerandaController::class, 'index']);
 });

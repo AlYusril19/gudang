@@ -10,6 +10,15 @@
                 </div>
             <div class="card-body">
                 <div class="form-group mb-3">
+                    <label for="status">Status Barang</label>
+                    {{-- <input type="text" class="form-control" id="status" value="{{ $barang->status }}" readonly> --}}
+                    <span class="form-control badge {{ $barang->status == 'aktif' ? 'bg-label-primary' : 'bg-label-warning' }}">{{ $barang->status }}</span>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="nama_kategori">Kategori Barang</label>
+                    <input type="text" class="form-control" id="nama_kategori" value="{{ $barang->kategori->nama_kategori ?? '-'}}" readonly>
+                </div>
+                <div class="form-group mb-3">
                     <label for="kode_barang">Kode Barang</label>
                     <input type="text" class="form-control" id="kode_barang" value="{{ $barang->kode_barang }}" readonly>
                 </div>

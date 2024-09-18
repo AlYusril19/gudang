@@ -70,7 +70,7 @@ class KategoriController extends Controller
         $kategoris = Kategori::findOrFail($id);
     
         // Cek apakah kategori sedang digunakan oleh barang
-        if ($kategoris->barang()->count() > 0) {
+        if ($kategoris->barang()->exists()) {
             return redirect()->back()->with('error', 'Kategori tidak dapat dihapus karena sedang digunakan oleh barang.');
         }
         

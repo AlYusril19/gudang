@@ -38,7 +38,7 @@
                             <label class="col-sm-2 col-form-label" for="harga_jual">Persen Laba</label>
                             <div class="col-sm-10">
                                 <div class="input-group">
-                                    <input type="number" class="form-control" id="harga_jual" name="harga_jual" placeholder="20 (persen)" min="1" max="100" required>
+                                    <input type="number" class="form-control" id="harga_jual" name="harga_jual" placeholder="20" min="1" max="100" required>
                                     <span class="input-group-text">%</span>
                                 </div>
                             </div>

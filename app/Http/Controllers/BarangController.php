@@ -15,13 +15,13 @@ class BarangController extends Controller
     {
         $orderBy = $request->get('order_by', 'nama_barang');  // Default sorting by nama_barang
         $direction = $request->get('direction', 'asc');       // Default direction is ascending
-
         $search = $request->get('search');  // Ambil parameter pencarian
 
         // Query dengan pencarian dan pengurutan
         $barangs = Barang::when($search, function ($query, $search) {
                 return $query->where('nama_barang', 'like', "%{$search}%");
             })
+            ->orderByRaw("status = 'aktif' DESC")
             ->orderBy($orderBy, $direction)
             ->get();
 
@@ -43,14 +43,13 @@ class BarangController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            // 'kode_barang' => 'required|string|max:32|unique:barang',
             'nama_barang' => 'required|string|max:32|unique:barang',
             'kategori_id' => 'nullable|exists:kategori,id',
             'harga_beli' => 'required|numeric',
-            'harga_jual' => 'required|numeric',
+            'harga_jual' => 'required|numeric|min:1|max:100',
             'deskripsi' => 'required|string|max:1024',
         ]);
-        $hargaJual = (1 + ($request->harga_jual/100)) * $request->harga_beli;
+        $hargaJual = (1 + ($request->harga_jual/100)) * $request->harga_beli; // kali persen request
 
         $kodeBarang = Barang::latest('id')->value('id');
         $kodeBarang = $kodeBarang ? $kodeBarang + 1 : 1;
@@ -73,7 +72,7 @@ class BarangController extends Controller
      */
     public function show(string $id)
     {
-        $barang = Barang::findOrFail($id);
+        $barang = Barang::with('kategori')->findOrFail($id);
         return view('barang.show_barang', compact('barang'));
     }
 
@@ -82,9 +81,10 @@ class BarangController extends Controller
      */
     public function edit(string $id)
     {
-        $barang = Barang::findOrFail($id);
+        $barang = Barang::with('kategori')->findOrFail($id);
         $kategoris =Kategori::all();
-        return view('barang.edit_barang', compact('barang', 'kategoris'));
+        $persenJual = (($barang->harga_jual - $barang->harga_beli) / $barang->harga_beli) * 100 ; //display persen jual sebelumnya
+        return view('barang.edit_barang', compact('barang', 'kategoris', 'persenJual'));
     }
 
     /**
@@ -94,10 +94,10 @@ class BarangController extends Controller
     {
         $request->validate([
             'kode_barang' => 'required|string|max:32|unique:barang,kode_barang,' . $id,
-            'nama_barang' => 'required|string|max:32|unique:barang' . $id,
+            'nama_barang' => 'required|string|max:32|unique:barang,nama_barang,'.$id,
             'kategori_id' => 'nullable|exists:kategori,id',
             'harga_beli' => 'required|numeric',
-            'harga_jual' => 'required|numeric',
+            'harga_jual' => 'required|numeric|min:1|max:100',
             'deskripsi' => 'required|string|max:1024',
         ]);
         
@@ -127,8 +127,28 @@ class BarangController extends Controller
     public function destroy(string $id)
     {
         $barang = Barang::findOrFail($id);
+        // Cek apakah kategori sedang digunakan oleh barang
+        if ($barang->penjualans()->exists() || $barang->pembelians()->exists()) {
+            return redirect()->back()->with('error', 'Barang tidak dapat dihapus, karena digunakan di penjualan / pembelian.');
+        }
         $barang->delete();
 
         return redirect()->route('barang.index')->with('success', 'Barang berhasil dihapus');
+    }
+
+    /**
+     * Function Status Arsip dan Aktif view index.
+     */
+    public function toggleStatus(Request $request)
+    {
+        try {
+            $barang = Barang::findOrFail($request->id);
+            $barang->status = $request->status;
+            $barang->save();
+
+            return response()->json(['success' => true, 'message' => 'Status barang berhasil diubah']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Terjadi kesalahan saat mengubah status barang.']);
+        }
     }
 }
