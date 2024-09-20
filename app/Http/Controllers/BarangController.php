@@ -128,7 +128,7 @@ class BarangController extends Controller
     {
         $barang = Barang::findOrFail($id);
         // Cek apakah kategori sedang digunakan oleh barang
-        if ($barang->penjualans()->exists() || $barang->pembelians()->exists()) {
+        if ($barang->penjualans()->count() > 0 || $barang->pembelians()->count() > 0) {
             return redirect()->back()->with('error', 'Barang tidak dapat dihapus, karena digunakan di penjualan / pembelian.');
         }
         $barang->delete();

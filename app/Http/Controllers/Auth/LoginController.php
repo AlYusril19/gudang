@@ -52,5 +52,32 @@ class LoginController extends Controller
         Auth::logout();
         return redirect('/');
     }
-}
 
+    // Login API untuk aplikasi teknisi
+    public function apiLogin(Request $request)
+    {
+        // Validasi input login
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        // Mencoba login dengan kredensial yang diberikan
+        if (!Auth::attempt($request->only('email', 'password'))) {
+            return response()->json([
+                'message' => 'Invalid credentials.'
+            ], 401);
+        }
+
+        $user = Auth::user();
+
+        // Buat token API untuk user
+        $token = $user->createToken('API Token')->plainTextToken;
+
+        return response()->json([
+            'message' => 'Login successful',
+            'token' => $token,
+            'user' => $user,
+        ]);
+    }
+}

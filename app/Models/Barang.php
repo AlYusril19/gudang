@@ -36,7 +36,7 @@ class Barang extends Model
     }
     public function pembelians()
     {
-        return $this->belongsToMany(Penjualan::class, 'pembelian_barang')
+        return $this->belongsToMany(Pembelian::class, 'pembelian_barang')
                     ->withPivot('jumlah', 'harga_beli')
                     ->withTimestamps();
     }
