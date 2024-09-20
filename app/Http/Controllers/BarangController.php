@@ -151,4 +151,25 @@ class BarangController extends Controller
             return response()->json(['success' => false, 'message' => 'Terjadi kesalahan saat mengubah status barang.']);
         }
     }
+    
+    /*  */
+    /* BARANG API */
+    /*  */
+    public function getBarangs(Request $request)
+    {
+        $orderBy = $request->get('order_by', 'nama_barang');  // Default sorting by nama_barang
+        $direction = $request->get('direction', 'asc');       // Default direction is ascending
+        $search = $request->get('search');  // Ambil parameter pencarian
+
+        // Query dengan pencarian dan pengurutan
+        $barangs = Barang::when($search, function ($query, $search) {
+                return $query->where('nama_barang', 'like', "%{$search}%");
+            })
+            ->orderBy($orderBy, $direction)
+            ->get();
+
+        // Kembalikan sebagai JSON response
+        return response()->json($barangs);
+    }
+
 }

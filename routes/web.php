@@ -87,3 +87,5 @@ Route::group(['middleware' => ['auth', 'role:staff']], function () {
     // Route untuk staff
     Route::get('/staff', [OperatorBerandaController::class, 'index']);
 });
+
+Route::get('/api/barangs', [BarangController::class, 'getBarangs']);
