@@ -92,4 +92,32 @@ class UserController extends Controller
 
         return redirect()->route('users.index')->with('success', 'User berhasil dihapus');
     }
+
+    /*  */
+    /* API CONTROLLER */
+    /*  */
+    public function apiUpdate(Request $request)
+    {
+        // Validasi input
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'password' => 'nullable|string|min:8|confirmed',
+        ]);
+
+        // Ambil user yang sedang login
+        $user = auth()->user();
+
+        // Update nama
+        $user->name = $request->name;
+
+        // Jika password diisi, baru update password
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+
+        // Simpan perubahan
+        $user->save();
+
+        return response()->json(['message' => 'Profile updated successfully!'], 200);
+    }
 }

@@ -42,7 +42,7 @@ class PembelianController extends Controller
     public function create()
     {
         $suppliers = Supplier::all();
-        $barang = Barang::all();
+        $barang = Barang::where('status', 'aktif')->orderBy('nama_barang', 'asc')->get();
         return view('pembelian.create_pembelian', compact('barang', 'suppliers'));
     }
 

@@ -42,7 +42,7 @@ class PenjualanController extends Controller
      */
     public function create()
     {
-        $barang = Barang::all();
+        $barang = Barang::where('status', 'aktif')->orderBy('nama_barang', 'asc')->get();
         $customers = Customer::all();
         return view('penjualan.create_penjualan', compact('barang', 'customers'));
     }
@@ -63,8 +63,11 @@ class PenjualanController extends Controller
         try {
             DB::beginTransaction();
 
+            $userId = auth()->user()->id;
+            dd($userId);
             // Simpan data penjualan utama
             $penjualan = Penjualan::create([
+                'user_id' => $userId,
                 'customer_id' => $request->customer_id,
                 'tanggal_penjualan' => now(),
             ]);
@@ -196,4 +199,84 @@ class PenjualanController extends Controller
         return response()->json(['harga_jual' => formatRupiah(0)], 404); // Jika barang tidak ditemukan
     }
 
+    /*  */
+    /* SEND API */
+    /*  */
+    public function storeApi(Request $request)
+    {
+        // Validasi data yang dikirim dari web baru
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'barang' => 'required|array',
+            'barang.*.id' => 'required|exists:barang,id',
+            'barang.*.jumlah' => 'required|integer|min:1',
+        ]);
+
+        try {
+            // Mulai transaksi database
+            DB::beginTransaction();
+
+            // Simpan data penjualan utama
+            $penjualan = Penjualan::create([
+                'user_id' => $request->user_id,
+                'customer_id' => '4', // Jika tidak ada customer, diisi null
+                'tanggal_penjualan' => now(),
+            ]);
+
+            $totalHarga = 0;
+
+            // Looping untuk setiap barang yang dikirim dari web baru
+            foreach ($request->barang as $barangData) {
+                $barang = Barang::findOrFail($barangData['id']);
+
+                // Cek stok barang apakah mencukupi
+                if ($barang->stok < $barangData['jumlah']) {
+                    // Jika stok tidak cukup, rollback transaksi
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => "Stok barang {$barang->nama_barang} tidak mencukupi. Stok tersedia: {$barang->stok}, jumlah diminta: {$barangData['jumlah']}"
+                    ], 400);
+                }
+
+                // Simpan detail penjualan barang
+                $penjualan->PenjualanBarang()->create([
+                    'penjualan_id' => $penjualan->id,
+                    'barang_id' => $barangData['id'],
+                    'jumlah' => $barangData['jumlah'],
+                    'harga_jual' => $barang->harga_jual,
+                ]);
+
+                // Update stok barang
+                $barang->stok -= $barangData['jumlah'];
+                $barang->save();
+
+                // Hitung total harga penjualan
+                $totalHarga += $barang->harga_jual * $barangData['jumlah'];
+            }
+
+            // Simpan total harga di penjualan
+            $penjualan->total_harga = $totalHarga;
+            $penjualan->save();
+
+            // Commit transaksi
+            DB::commit();
+
+            // Berikan respon sukses
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Penjualan berhasil disimpan.',
+                'data' => $penjualan
+            ], 201);
+
+        } catch (\Exception $e) {
+            // Rollback jika ada error
+            DB::rollBack();
+
+            // Berikan respon gagal
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

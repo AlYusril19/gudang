@@ -27,7 +27,7 @@
       content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
     />
 
-    <title>Login Pages E-Sertifikat SkyTaMa</title>
+    <title>Login Pages E-Gudang SkyTaMa</title>
 
     <meta name="description" content="" />
 
@@ -132,7 +132,7 @@
                       </g>
                     </svg>
                   </span>
-                  <span class="app-brand-text demo text-body fw-bolder">E-Sertifikat</span>
+                  <span class="app-brand-text demo text-body fw-bolder">E-Gudang</span>
                 </a>
               </div>
               <!-- /Logo -->

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Penjualan extends Model
 {
     protected $table = 'penjualan';
-    protected $fillable = ['customer_id', 'tanggal_penjualan', 'total_harga'];
+    protected $fillable = ['customer_id', 'tanggal_penjualan', 'total_harga', 'user_id'];
 
     public function penjualanBarang()
     {
@@ -18,5 +18,10 @@ class Penjualan extends Model
     public function customer()
     {
         return $this->belongsTo(Customer::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }
