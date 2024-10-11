@@ -210,6 +210,7 @@ class PenjualanController extends Controller
             'barang' => 'required|array',
             'barang.*.id' => 'required|exists:barang,id',
             'barang.*.jumlah' => 'required|integer|min:1',
+            'kegiatan' => 'required',
         ]);
 
         try {
@@ -219,7 +220,8 @@ class PenjualanController extends Controller
             // Simpan data penjualan utama
             $penjualan = Penjualan::create([
                 'user_id' => $request->user_id,
-                'customer_id' => '4', // Jika tidak ada customer, diisi null
+                'kegiatan' => $request->kegiatan,
+                // 'customer_id' => '4', // Jika tidak ada customer, diisi null
                 'tanggal_penjualan' => now(),
             ]);
 

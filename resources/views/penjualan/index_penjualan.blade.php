@@ -36,7 +36,7 @@
                         <tr>
                             <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>{{ $loop->iteration }}</strong></td>
                             <td>{{ $p->tanggal_penjualan }}</td>
-                            <td>{{ $p->customer->nama }}</td>
+                            <td>{{ $p->customer->nama ?? '-' }}</td>
                             <td>
                                 @foreach ($p->penjualanBarang as $barang)
                                     {{ $barang->barang->nama_barang }} ({{ $barang->jumlah }} pcs)<br>

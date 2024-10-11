@@ -28,8 +28,10 @@ Route::post('/login', [LoginController::class, 'apiLogin']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/get-barang', [BarangController::class, 'getBarangs']);
+    Route::get('/get-user/{id}', [UserController::class, 'apiUser']);
     Route::put('/user/update', [UserController::class, 'apiUpdate']);
     Route::post('/penjualan', [PenjualanController::class, 'storeApi']);
 });
 
+// Route::get('/get-user/{id}', [UserController::class, 'apiUser']);
 // Route::get('/get-barang', [BarangController::class, 'getBarangs']);

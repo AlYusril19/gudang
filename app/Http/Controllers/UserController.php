@@ -120,4 +120,8 @@ class UserController extends Controller
 
         return response()->json(['message' => 'Profile updated successfully!'], 200);
     }
+
+    public function apiUser($id) {
+        return response()->json(User::findOrFail($id));
+    }
 }
