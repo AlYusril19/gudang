@@ -165,6 +165,7 @@ class BarangController extends Controller
         $barangs = Barang::when($search, function ($query, $search) {
                 return $query->where('nama_barang', 'like', "%{$search}%");
             })
+            ->whereRaw('status != "arsip"')
             ->orderBy($orderBy, $direction)
             ->get();
 
