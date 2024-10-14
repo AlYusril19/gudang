@@ -168,4 +168,69 @@ class PembelianController extends Controller
         return response()->json(['error' => 'Barang tidak ditemukan'], 404);
     }
 
+    /*  */
+    /* SEND API */
+    /*  */
+    public function storeApi(Request $request)
+    {
+        $request->validate([
+            'supplier_id' => 'required|exists:supplier,id',
+            'barang_ids' => 'required|array',
+            'barang_ids.*' => 'exists:barang,id',
+            'jumlah' => 'required|array',
+            'jumlah.*' => 'integer|min:1',
+            'harga_beli' => 'required|array',
+            'harga_beli.*' => 'integer',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            // Simpan data pembelian utama
+            $pembelian = Pembelian::create([
+                'supplier_id' => $request->supplier_id,
+                'tanggal_pembelian' => now(),
+            ]);
+            $totalHarga = 0;
+
+            // Simpan detail pembelian (barang yang dijual)
+            foreach ($request->barang_ids as $index => $barangId) {
+                $barang = Barang::findOrFail($barangId);
+                
+                $pembelian->pembelianBarang()->create([
+                    'pembelian_id' => $pembelian->id,
+                    'barang_id' => $barangId,
+                    'jumlah' => $request->jumlah[$index],
+                    'harga_beli' => $request->harga_beli[$index],
+                ]);
+
+                // Update stok barang
+                $barang->stok += $request->jumlah[$index];
+                $barang->harga_beli = $request->harga_beli[$index];
+                $barang->save();
+                // Hitung total harga
+                $totalHarga += $request->harga_beli[$index]*$request->jumlah[$index];
+            }
+            $pembelian->total_harga = $totalHarga;
+            $pembelian->save();
+
+            DB::commit();
+
+            // Berikan respon sukses
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Penjualan berhasil disimpan.',
+                'data' => $pembelian
+            ], 201);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            
+            // Berikan respon gagal
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

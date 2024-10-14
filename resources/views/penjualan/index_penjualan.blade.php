@@ -24,7 +24,7 @@
                     <tr>
                         <th>No</th>
                         <th>Tanggal Penjualan</th>
-                        <th>Customer</th>
+                        <th>Cust / Usr</th>
                         <th>Barang</th>
                         <th>Jumlah</th>
                         <th>Total Harga</th>
@@ -36,7 +36,7 @@
                         <tr>
                             <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>{{ $loop->iteration }}</strong></td>
                             <td>{{ $p->tanggal_penjualan }}</td>
-                            <td>{{ $p->customer->nama ?? '-' }}</td>
+                            <td>{{ $p->customer->nama ?? '-' }} | {{ $p->user->name ?? '-' }}</td>
                             <td>
                                 @foreach ($p->penjualanBarang as $barang)
                                     {{ $barang->barang->nama_barang }} ({{ $barang->jumlah }} pcs)<br>

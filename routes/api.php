@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BarangController;
+use App\Http\Controllers\PembelianController;
 use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -31,6 +32,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/get-user/{id}', [UserController::class, 'apiUser']);
     Route::put('/user/update', [UserController::class, 'apiUpdate']);
     Route::post('/penjualan', [PenjualanController::class, 'storeApi']);
+    Route::post('/pembelian', [PembelianController::class, 'storeApi']);
 });
 
 // Route::get('/get-user/{id}', [UserController::class, 'apiUser']);
