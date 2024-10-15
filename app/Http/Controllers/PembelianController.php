@@ -173,59 +173,111 @@ class PembelianController extends Controller
     /*  */
     public function storeApi(Request $request)
     {
+        // Validasi data yang dikirim dari web baru
         $request->validate([
-            'supplier_id' => 'required|exists:supplier,id',
-            'barang_ids' => 'required|array',
-            'barang_ids.*' => 'exists:barang,id',
-            'jumlah' => 'required|array',
-            'jumlah.*' => 'integer|min:1',
-            'harga_beli' => 'required|array',
-            'harga_beli.*' => 'integer',
+            'user_id' => 'required|exists:users,id',
+            'barang' => 'required|array',
+            'barang.*.id' => 'required|exists:barang,id',
+            'barang.*.jumlah' => 'required|integer|min:1',
+            'kegiatan' => 'required',
         ]);
 
         try {
+            // Mulai transaksi database
             DB::beginTransaction();
 
             // Simpan data pembelian utama
             $pembelian = Pembelian::create([
-                'supplier_id' => $request->supplier_id,
+                'user_id' => $request->user_id,
+                'kegiatan' => $request->kegiatan,
                 'tanggal_pembelian' => now(),
             ]);
+
             $totalHarga = 0;
 
-            // Simpan detail pembelian (barang yang dijual)
-            foreach ($request->barang_ids as $index => $barangId) {
-                $barang = Barang::findOrFail($barangId);
-                
+            // Looping untuk setiap barang yang dikirim dari web baru
+            foreach ($request->barang as $barangData) {
+                $barang = Barang::findOrFail($barangData['id']);
+
+                // Simpan detail pembelian barang
                 $pembelian->pembelianBarang()->create([
                     'pembelian_id' => $pembelian->id,
-                    'barang_id' => $barangId,
-                    'jumlah' => $request->jumlah[$index],
-                    'harga_beli' => $request->harga_beli[$index],
+                    'barang_id' => $barangData['id'],
+                    'jumlah' => $barangData['jumlah'],
+                    'harga_beli' => $barang->harga_beli,
                 ]);
 
                 // Update stok barang
-                $barang->stok += $request->jumlah[$index];
-                $barang->harga_beli = $request->harga_beli[$index];
+                $barang->stok += $barangData['jumlah'];
                 $barang->save();
-                // Hitung total harga
-                $totalHarga += $request->harga_beli[$index]*$request->jumlah[$index];
+
+                // Hitung total harga pembelian
+                $totalHarga += $barang->harga_beli * $barangData['jumlah'];
             }
+
+            // Simpan total harga di pembelian
             $pembelian->total_harga = $totalHarga;
             $pembelian->save();
 
+            // Commit transaksi
             DB::commit();
 
             // Berikan respon sukses
             return response()->json([
                 'status' => 'success',
-                'message' => 'Penjualan berhasil disimpan.',
+                'message' => 'Pembelian berhasil disimpan.',
                 'data' => $pembelian
             ], 201);
 
         } catch (\Exception $e) {
+            // Rollback jika ada error
             DB::rollBack();
-            
+
+            // Berikan respon gagal
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function destroyApi($id)
+    {
+        try {
+            // Mulai transaksi database
+            DB::beginTransaction();
+
+            // Cari data pembelian berdasarkan ID
+            $pembelian = Pembelian::with('pembelianBarang')->findOrFail($id);
+
+            // Looping untuk setiap barang di dalam pembelian yang akan dihapus
+            foreach ($pembelian->pembelianBarang as $pembelianBarang) {
+                $barang = Barang::findOrFail($pembelianBarang->barang_id);
+
+                // Kembalikan stok barang
+                $barang->stok -= $pembelianBarang->jumlah;
+                $barang->save();
+            }
+
+            // Hapus detail pembelian
+            $pembelian->pembelianBarang()->delete();
+
+            // Hapus pembelian utama
+            $pembelian->delete();
+
+            // Commit transaksi
+            DB::commit();
+
+            // Berikan respon sukses
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Pembelian berhasil dihapus.'
+            ], 200);
+
+        } catch (\Exception $e) {
+            // Rollback jika ada error
+            DB::rollBack();
+
             // Berikan respon gagal
             return response()->json([
                 'status' => 'error',

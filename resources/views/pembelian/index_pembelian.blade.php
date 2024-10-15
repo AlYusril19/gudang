@@ -20,7 +20,7 @@
                     <tr>
                         <th>No</th>
                         <th>Tanggal Pembelian</th>
-                        <th>Supplier</th>
+                        <th>Supp | Usr</th>
                         <th>Barang</th>
                         <th>Jumlah</th>
                         <th>Total Harga</th>
@@ -32,7 +32,7 @@
                         <tr>
                             <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>{{ $loop->iteration }}</strong></td>
                             <td>{{ $p->tanggal_pembelian }}</td>
-                            <td>{{ $p->supplier->nama }}</td>
+                            <td>{{ $p->supplier->nama ?? '-' }} | {{ $p->user->name ?? '-' }}</td>
                             <td>
                                 @foreach ($p->pembelianBarang as $barang)
                                     {{ $barang->barang->nama_barang }} ({{ $barang->jumlah }} pcs)<br>
