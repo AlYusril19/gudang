@@ -67,7 +67,7 @@ class PenjualanController extends Controller
             DB::beginTransaction();
 
             $userId = auth()->user()->id;
-            dd($userId);
+            // dd($userId);
             // Simpan data penjualan utama
             $penjualan = Penjualan::create([
                 'user_id' => $userId,

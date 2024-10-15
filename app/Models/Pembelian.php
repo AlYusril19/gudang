@@ -13,7 +13,8 @@ class Pembelian extends Model
         'tanggal_pembelian', 
         'total_harga',
         'user_id',
-        'kegiatan'
+        'kegiatan',
+        'status'
     ];
 
     public function pembelianBarang()
