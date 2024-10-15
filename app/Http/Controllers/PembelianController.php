@@ -75,19 +75,21 @@ class PembelianController extends Controller
             foreach ($request->barang_ids as $index => $barangId) {
                 $barang = Barang::findOrFail($barangId);
                 
+                // update harga jual
+                $persenHargaJualLama = (($barang->harga_jual - $barang->harga_beli) / $barang->harga_beli) + 1;
+                $barang->harga_jual = $request->harga_beli[$index] * $persenHargaJualLama;
+                $barang->save();
+
                 $pembelian->pembelianBarang()->create([
                     'pembelian_id' => $pembelian->id,
                     'barang_id' => $barangId,
                     'jumlah' => $request->jumlah[$index],
                     'harga_beli' => $request->harga_beli[$index],
                 ]);
-
                 // Update stok barang
                 $barang->stok += $request->jumlah[$index];
                 $barang->harga_beli = $request->harga_beli[$index];
-                // update harga jual
-                $persenHargaJualLama = (($barang->harga_jual - $barang->harga_beli) / $barang->harga_beli) + 1;
-                $barang->harga_jual = $request->harga_beli[$index] * $persenHargaJualLama;
+                
                 $barang->save();
                 // Hitung total harga
                 $totalHarga += $request->harga_beli[$index]*$request->jumlah[$index];
