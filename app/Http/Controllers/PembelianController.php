@@ -66,6 +66,7 @@ class PembelianController extends Controller
 
             // Simpan data pembelian utama
             $pembelian = Pembelian::create([
+                'user_id' => $request->user_id,
                 'supplier_id' => $request->supplier_id,
                 'tanggal_pembelian' => now(),
             ]);
