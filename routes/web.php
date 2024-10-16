@@ -42,7 +42,7 @@ Route::group(['middleware' => ['auth', 'role:admin']], function () {
     Route::resource('/admin/kategori', KategoriController::class);
 
     Route::resource('/admin/pembelian', PembelianController::class);
-    Route::get('/admin/pembelian/harga-beli', [PembelianController::class, 'getHargaBeli'])->name('pembelian.getHargaBeli');
+    Route::get('/pembelian/getHargaBeli', [PembelianController::class, 'getHargaBeli'])->name('pembelian.getHargaBeli');
 
     Route::resource('/admin/penjualan', PenjualanController::class);
     Route::post('/get-harga-jual', [PenjualanController::class, 'getHargaJual']);
