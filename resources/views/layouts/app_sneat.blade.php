@@ -147,7 +147,7 @@
           <ul class="menu-inner py-1">
             <!-- Dashboard -->
             <li class="menu-item {{ \Route::is('admin.index') ? 'active' : '' }}">
-              <a href="{{ route('admin.index') }}" class="menu-link">
+              <a href="{{ route('dashboard.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-home-circle"></i>
                 <div data-i18n="Analytics">Dashboard</div>
               </a>
@@ -458,6 +458,14 @@
 
     <!-- Page JS -->
     <script src="{{ asset('sneat') }}/assets/js/dashboards-analytics.js"></script>
+
+    <script>
+      window.setTimeout(function() {
+        $(".alert").fadeTo(500, 0).slideUp(500, function(){
+          $(this).remove(); 
+        });
+      }, 3500);
+    </script>
 
     @yield('js')
 

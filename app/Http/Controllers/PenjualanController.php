@@ -142,6 +142,10 @@ class PenjualanController extends Controller
 
             // Temukan data penjualan
             $penjualan = Penjualan::findOrFail($id);
+            $user = auth()->user()->id;
+            if ($penjualan->user_id != $user) {
+                return redirect()->back()->with('error', 'Data gagal dihapus karena berkaitan dengan user lain, silahkan hubungi user yang bersangkutan');
+            }
 
             // Kembalikan stok barang
             foreach ($penjualan->penjualanBarang as $detail) {

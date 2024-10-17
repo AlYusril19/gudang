@@ -66,7 +66,7 @@ class PembelianController extends Controller
 
             // Simpan data pembelian utama
             $pembelian = Pembelian::create([
-                'user_id' => $request->user_id,
+                'user_id' => auth()->user()->id,
                 'supplier_id' => $request->supplier_id,
                 'tanggal_pembelian' => now(),
             ]);
@@ -140,7 +140,12 @@ class PembelianController extends Controller
 
             // Temukan data pembelian
             $pembelian = Pembelian::findOrFail($id);
+            $user = auth()->user()->id;
 
+            if ($pembelian->user_id != $user) {
+                return redirect()->back()->with('error', 'Data gagal dihapus karena berkaitan dengan user lain, silahkan hubungi user yang bersangkutan');
+            }
+            
             // Kembalikan stok barang
             foreach ($pembelian->pembelianBarang as $detail) {
                 $barang = Barang::find($detail->barang_id);

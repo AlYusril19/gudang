@@ -32,7 +32,8 @@ Auth::routes();
 // Role User Admin
 Route::group(['middleware' => ['auth', 'role:admin']], function () {
     // Route untuk admin
-    Route::get('/admin/dashboard', [AdminBerandaController::class, 'index'])->name('admin.index');
+    // Route::get('/admin/dashboard', [AdminBerandaController::class, 'index'])->name('admin.index');
+    Route::resource('/admin/dashboard', AdminBerandaController::class);
 
     Route::resource('/admin/users', UserController::class);
 
@@ -51,11 +52,6 @@ Route::group(['middleware' => ['auth', 'role:admin']], function () {
     Route::resource('/admin/customer', CustomerController::class);
 
     Route::resource('/admin/supplier', SupplierController::class);
-});
-
-Route::group(['middleware' => ['auth', 'role:operator']], function () {
-    // Route untuk operator
-    Route::get('/operator/dashboard', [OperatorBerandaController::class, 'index'])->name('operator.index');
 });
 
 Route::group(['middleware' => ['auth', 'role:staff']], function () {
