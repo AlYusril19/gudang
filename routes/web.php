@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminBerandaController;
 use App\Http\Controllers\Api\StokBarangController;
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\KategoriController;
@@ -23,9 +24,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [LoginController::class, 'showLoginForm'])->name('showLoginForm');
+
+
+// Route::get('/', function () {
+//     return view('auth.login');
+// });
 
 Auth::routes();
 

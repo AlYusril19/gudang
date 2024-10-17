@@ -15,6 +15,16 @@ class LoginController extends Controller
 
     public function showLoginForm()
     {
+        $userRole = auth()->user()->role ?? null;
+        // Redirect ke dashboard atau halaman lain
+        if ($userRole) {
+            if ($userRole === 'admin') {
+                return redirect()->intended($this->redirectAdmin);
+            }
+            if ($userRole == 'operator') {
+                return redirect()->intended($this->redirectOperator);
+            }
+        }
         return view('auth.login');
     }
 
