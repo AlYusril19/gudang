@@ -48,6 +48,7 @@ class BarangController extends Controller
             'harga_beli' => 'required|numeric',
             'harga_jual' => 'required|numeric|min:1|max:100',
             'deskripsi' => 'required|string|max:1024',
+            'status' => 'required|string',
         ]);
         $hargaJual = (1 + ($request->harga_jual/100)) * $request->harga_beli; // kali persen request
 
@@ -62,6 +63,7 @@ class BarangController extends Controller
             'harga_beli' => $request->harga_beli,
             'harga_jual' => $hargaJual,
             'deskripsi' => $request->deskripsi,
+            'status' => $request->status,
         ]);
 
         return redirect()->route('barang.index')->with('success', 'Barang berhasil ditambahkan.');
@@ -93,12 +95,13 @@ class BarangController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'kode_barang' => 'required|string|max:32|unique:barang,kode_barang,' . $id,
+            // 'kode_barang' => 'required|string|max:32|unique:barang,kode_barang,' . $id,
             'nama_barang' => 'required|string|max:32|unique:barang,nama_barang,'.$id,
             'kategori_id' => 'nullable|exists:kategori,id',
             'harga_beli' => 'required|numeric',
             'harga_jual' => 'required|numeric|min:1|max:100',
             'deskripsi' => 'required|string|max:1024',
+            'status' => 'required|string',
         ]);
         
         try {
@@ -107,15 +110,16 @@ class BarangController extends Controller
             $hargaJual = (1 + ($request->harga_jual/100)) * $request->harga_beli;
             
             $barang->update([
-                'kode_barang' => $request->kode_barang,
+                'kode_barang' => $barang->kode_barang,
                 'nama_barang' => $request->nama_barang,
                 'kategori_id' => $request->kategori_id,
                 'harga_beli' => $request->harga_beli,
                 'harga_jual' => $hargaJual,
                 'deskripsi' => $request->deskripsi,
+                'status' => $request->status,
             ]);
 
-            return redirect()->route('barang.show', $barang->id )->with('success', 'Peserta berhasil diupdate');
+            return redirect()->route('barang.show', $barang->id )->with('success', 'Barang berhasil diupdate');
         } catch (\Exception $e) {
             return redirect()->route('barang.edit')->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
