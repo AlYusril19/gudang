@@ -33,7 +33,7 @@
                     <div class="row mb-3">
                         <label class="col-sm-2 col-form-label" for="harga_beli">Harga Beli</label>
                         <div class="col-sm-10">
-                            <input type="number" class="form-control" id="harga_beli" name="harga_beli" placeholder="135000" min="500" required>
+                            <input type="number" class="form-control" id="harga_beli" name="harga_beli" placeholder="135000" min="100" required>
                         </div>
                     </div>
 

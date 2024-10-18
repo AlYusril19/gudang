@@ -119,7 +119,14 @@ class PembelianController extends Controller
      */
     public function edit(string $id)
     {
-        // 
+        $pembelian = Pembelian::findOrFail($id);
+        if ($pembelian->user_id != auth()->user()->id) {
+            return redirect()->back()->with('error', 'Data gagal dihapus karena berkaitan dengan user lain, silahkan hubungi user yang bersangkutan');
+        }
+        // dd($pembelian->pembelianBarang);
+        $suppliers = Supplier::all();
+        $barang = Barang::where('status', 'aktif')->orderBy('nama_barang', 'asc')->get();
+        return view('pembelian.edit_pembelian', compact('barang', 'suppliers', 'pembelian'));
     }
 
     /**
@@ -127,7 +134,71 @@ class PembelianController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        // 
+        $request->validate([
+            'supplier_id' => 'required|exists:supplier,id',
+            'barang_ids' => 'required|array',
+            'barang_ids.*' => 'exists:barang,id',
+            'jumlah' => 'required|array',
+            'jumlah.*' => 'integer|min:1',
+            'harga_beli' => 'required|array',
+            'harga_beli.*' => 'integer',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            // Cari data pembelian berdasarkan ID
+            $pembelian = Pembelian::findOrFail($id);
+            $pembelian->update([
+                'supplier_id' => $request->supplier_id,
+                'tanggal_pembelian' => now(),
+            ]);
+
+            $totalHarga = 0;
+
+            foreach ($pembelian->pembelianBarang as $pembelianBarang) {
+                $barang = Barang::findOrFail($pembelianBarang->barang_id);
+                $barang->stok -= $pembelianBarang->jumlah;
+                $barang->save();
+            }
+
+            // Hapus detail pembelian lama (barang terkait)
+            $pembelian->pembelianBarang()->delete();
+
+            // Simpan detail pembelian baru
+            foreach ($request->barang_ids as $index => $barangId) {
+                $barang = Barang::findOrFail($barangId);
+                
+                // Hitung persen harga jual lama
+                $persenHargaJualLama = (($barang->harga_jual - $barang->harga_beli) / $barang->harga_beli) + 1;
+                $barang->harga_jual = $request->harga_beli[$index] * $persenHargaJualLama;
+                $barang->save();
+
+                // Tambahkan data baru ke tabel pembelian_barang
+                $pembelian->pembelianBarang()->create([
+                    'barang_id' => $barangId,
+                    'jumlah' => $request->jumlah[$index],
+                    'harga_beli' => $request->harga_beli[$index],
+                ]);
+
+                // Update stok barang
+                $barang->stok += $request->jumlah[$index];
+                $barang->harga_beli = $request->harga_beli[$index];
+                $barang->save();
+
+                // Hitung total harga
+                $totalHarga += $request->harga_beli[$index] * $request->jumlah[$index];
+            }
+
+            $pembelian->total_harga = $totalHarga;
+            $pembelian->save();
+
+            DB::commit();
+            return redirect()->route('pembelian.index')->with('success', 'Pembelian berhasil diperbarui.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 
     /**
