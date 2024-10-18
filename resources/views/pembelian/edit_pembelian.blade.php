@@ -69,10 +69,10 @@
                                     <input type="hidden" name="jumlah[]" class="barang-jumlah" value="{{ $detail->jumlah }}">
                                 </td>
                                 <td>
-                                    <span class="harga-beli-display">{{ number_format($detail->harga_beli, 0, ',', '.') }}</span>
+                                    <span class="harga-beli-display">{{ formatRupiah($detail->harga_beli) }}</span>
                                     <input type="hidden" name="harga_beli[]" class="barang-harga-beli" value="{{ $detail->harga_beli }}">
                                 </td>
-                                <td class="total-harga-beli">{{ number_format($detail->jumlah * $detail->harga_beli, 0, ',', '.') }}</td>
+                                <td class="total-harga-beli">{{ formatRupiah($detail->jumlah * $detail->harga_beli) }}</td>
                                 <td><button type="button" class="btn btn-sm btn-danger btn-hapus-barang">Hapus</button></td>
                             </tr>
                         @endforeach
@@ -82,8 +82,8 @@
 
             <!-- Total Harga Jual -->
             <div class="form-group mt-2">
-                <label>Total Harga Jual</label>
-                <input type="text" id="total-harga-beli" class="form-control" readonly>
+                <label>Total Harga Beli</label>
+                <input type="text" id="total-harga-beli" class="form-control" value="{{ formatRupiah($pembelian->total_harga) }}" readonly>
             </div>
 
             <!-- Submit Button -->
