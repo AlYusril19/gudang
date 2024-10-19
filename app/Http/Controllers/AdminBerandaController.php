@@ -24,7 +24,10 @@ class AdminBerandaController extends Controller
         $pembelianKemarin = Pembelian::whereMonth('tanggal_pembelian', $bulanKemarin)
                                 ->whereYear('tanggal_pembelian', $tahunKemarin)
                                 ->sum('total_harga');
-        $bandingPembelian = round(($pembelianSekarang-$pembelianKemarin)/$pembelianKemarin*100, 2);
+        $bandingPembelian = 0;
+        if ($pembelianKemarin) {
+            $bandingPembelian = round(($pembelianSekarang-$pembelianKemarin)/$pembelianKemarin*100, 2);
+        }
         return view('admin.beranda', [
             'pembelianSekarang' => $pembelianSekarang,
             'bandingPembelian' => $bandingPembelian
