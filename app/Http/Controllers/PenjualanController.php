@@ -218,6 +218,7 @@ class PenjualanController extends Controller
             'barang.*.id' => 'required|exists:barang,id',
             'barang.*.jumlah' => 'required|integer|min:1',
             'kegiatan' => 'required',
+            'tanggal_penjualan' => 'required',
         ]);
 
         try {
@@ -229,7 +230,7 @@ class PenjualanController extends Controller
                 'user_id' => $request->user_id,
                 'kegiatan' => $request->kegiatan,
                 // 'customer_id' => '4', // Jika tidak ada customer, diisi null
-                'tanggal_penjualan' => now(),
+                'tanggal_penjualan' => $request->tanggal_penjualan,
             ]);
 
             $totalHarga = 0;

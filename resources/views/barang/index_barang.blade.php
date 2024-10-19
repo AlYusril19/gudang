@@ -7,7 +7,7 @@
             <a href="{{ route('barang.create') }}" class="btn btn-primary mb-0">Tambah Item</a>
             <div class=" align-items-center">
                 <form action="{{ route('barang.index') }}" method="GET" class="d-flex me-2">
-                    <input type="text" name="search" class="form-control me-2" placeholder="Cari Barang" value="{{ request('search') }}">
+                    <input type="text" name="search" class="form-control" placeholder="Cari Barang" value="{{ request('search') }}">
                     <button type="submit" class="btn btn-primary">Cari</button>
                 </form>
             </div>

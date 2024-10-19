@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Pembelian;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class AdminBerandaController extends Controller
@@ -11,7 +13,22 @@ class AdminBerandaController extends Controller
      */
     public function index()
     {
-        return view('admin.beranda');
+        $now = Carbon::now();
+        $bulanSekarang = $now->month;
+        $tahunSekarang = $now->year;
+        $pembelianSekarang = Pembelian::whereMonth('tanggal_pembelian', $bulanSekarang)
+                                ->whereYear('tanggal_pembelian', $tahunSekarang)
+                                ->sum('total_harga');
+        $bulanKemarin = $now->subMonth()->month;
+        $tahunKemarin = $now->subMonth()->year;
+        $pembelianKemarin = Pembelian::whereMonth('tanggal_pembelian', $bulanKemarin)
+                                ->whereYear('tanggal_pembelian', $tahunKemarin)
+                                ->sum('total_harga');
+        $bandingPembelian = round(($pembelianSekarang-$pembelianKemarin)/$pembelianKemarin*100, 2);
+        return view('admin.beranda', [
+            'pembelianSekarang' => $pembelianSekarang,
+            'bandingPembelian' => $bandingPembelian
+        ]);
     }
 
     /**

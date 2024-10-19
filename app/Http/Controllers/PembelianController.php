@@ -262,6 +262,7 @@ class PembelianController extends Controller
             'barang.*.id' => 'required|exists:barang,id',
             'barang.*.jumlah' => 'required|integer|min:1',
             'kegiatan' => 'required',
+            'tanggal_pembelian' => 'required',
         ]);
 
         try {
@@ -272,7 +273,7 @@ class PembelianController extends Controller
             $pembelian = Pembelian::create([
                 'user_id' => $request->user_id,
                 'kegiatan' => $request->kegiatan,
-                'tanggal_pembelian' => now(),
+                'tanggal_pembelian' => $request->tanggal_pembelian,
             ]);
 
             $totalHarga = 0;
