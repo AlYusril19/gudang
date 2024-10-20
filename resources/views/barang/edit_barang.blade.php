@@ -142,11 +142,13 @@
                     </div>
 
                     <div class="row mb-3">
-                        <label class="col-sm-2 col-form-label" for="gambar">Gambar Barang</label>
+                        <label class="col-sm-2 col-form-label" for="gambar">Upload Gambar</label>
                         <div class="col-sm-10">
-                            <input type="file" name="gambar[]" id="gambar" multiple accept="image/*" onchange="previewImages()">
+                            <input type="file" name="gambar[]" id="gambar" multiple accept="image/*" onchange="previewAndCompressImages()">
+                            {{-- <div id="imagePreview" class="d-flex flex-wrap"></div> --}}
                         </div>
                     </div>
+                    <div id="imagePreview" class="image-preview"></div>
                     <div id="imagePreview" class="image-preview">
                         @foreach ($barang->galeri as $foto)
                             <div class="image-container">
@@ -197,53 +199,124 @@
 
     {{-- Preview Image --}}
     <script>
+        // Inisialisasi DataTransfer untuk menyimpan file yang dipilih
         let selectedFiles = new DataTransfer();
 
-        function previewImages() {
+        // Fungsi untuk mempratinjau dan kompres gambar
+        function previewAndCompressImages() {
             var preview = document.getElementById('imagePreview');
             var input = document.getElementById('gambar');
             var files = input.files;
 
+            // Loop melalui file yang baru dipilih
             for (let i = 0; i < files.length; i++) {
                 let file = files[i];
-                selectedFiles.items.add(file);
 
-                var reader = new FileReader();
-                reader.onload = function(e) {
-                    var container = document.createElement('div');
-                    container.classList.add('image-container');
+                // Jika ukuran file di bawah 350KB, tambahkan langsung tanpa kompresi
+                if (file.size <= 350 * 1024) {
+                    addFileToPreviewAndSelected(file);
+                } else {
+                    // Buat FileReader untuk membaca file
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        var img = new Image();
+                        img.src = e.target.result;
 
-                    var img = document.createElement('img');
-                    img.src = e.target.result;
-                    container.appendChild(img);
+                        img.onload = function() {
+                            var canvas = document.createElement('canvas');
+                            var ctx = canvas.getContext('2d');
 
-                    var deleteButton = document.createElement('button');
-                    deleteButton.textContent = '×';
-                    deleteButton.classList.add('delete-image-btn');
+                            var width = img.width;
+                            var height = img.height;
+                            var maxDimension = 1024;
 
-                    // Event untuk menghapus gambar pratinjau
-                    deleteButton.onclick = function() {
-                        for (let j = 0; j < selectedFiles.items.length; j++) {
-                            if (file.name === selectedFiles.items[j].getAsFile().name) {
-                                selectedFiles.items.remove(j);
-                                break;
+                            // Resize gambar jika lebih besar dari maxDimension
+                            if (width > height) {
+                                if (width > maxDimension) {
+                                    height = Math.round((height *= maxDimension / width));
+                                    width = maxDimension;
+                                }
+                            } else {
+                                if (height > maxDimension) {
+                                    width = Math.round((width *= maxDimension / height));
+                                    height = maxDimension;
+                                }
                             }
-                        }
 
-                        input.files = selectedFiles.files;
-                        container.remove();
+                            // Atur ukuran canvas
+                            canvas.width = width;
+                            canvas.height = height;
+                            ctx.drawImage(img, 0, 0, width, height);
+
+                            // Fungsi untuk kompresi bertahap hingga ukuran di bawah 350kB
+                            function compressImage(quality, callback) {
+                                canvas.toBlob(function(blob) {
+                                    if (blob.size <= 350 * 1024 || quality <= 0.1) {
+                                        var compressedFile = new File([blob], file.name, { type: file.type });
+                                        callback(compressedFile);
+                                    } else {
+                                        compressImage(quality - 0.05, callback);
+                                    }
+                                }, file.type, quality);
+                            }
+
+                            // Kompres gambar dengan kualitas awal 0.9
+                            compressImage(0.9, function(compressedFile) {
+                                addFileToPreviewAndSelected(compressedFile);
+                            });
+                        };
                     };
 
-                    container.appendChild(deleteButton);
-                    preview.appendChild(container);
-                };
-
-                reader.readAsDataURL(file);
+                    reader.readAsDataURL(file);
+                }
             }
-
-            input.files = selectedFiles.files;
         }
 
+        // Fungsi untuk menambahkan file ke pratinjau dan DataTransfer
+        function addFileToPreviewAndSelected(file) {
+            // Tambahkan file ke DataTransfer
+            selectedFiles.items.add(file);
+
+            // Update input files dengan gambar yang terkompres
+            document.getElementById('gambar').files = selectedFiles.files;
+
+            // Buat pratinjau gambar
+            var preview = document.getElementById('imagePreview');
+            var container = document.createElement('div');
+            container.classList.add('image-container');
+
+            var img = document.createElement('img');
+            img.src = URL.createObjectURL(file);
+            container.appendChild(img);
+
+            var deleteButton = document.createElement('button');
+            deleteButton.textContent = '×';
+            deleteButton.classList.add('delete-image-btn');
+
+            // Event untuk menghapus gambar
+            deleteButton.onclick = function() {
+                // Hapus file dari DataTransfer
+                for (let j = 0; j < selectedFiles.items.length; j++) {
+                    if (file.name === selectedFiles.items[j].getAsFile().name) {
+                        selectedFiles.items.remove(j);
+                        break;
+                    }
+                }
+
+                // Update input files
+                document.getElementById('gambar').files = selectedFiles.files;
+
+                // Hapus pratinjau gambar
+                container.remove();
+            };
+
+            container.appendChild(deleteButton);
+            preview.appendChild(container);
+        }
+    </script>
+
+    {{-- Delete Image --}}
+    <script>
         // Fungsi untuk menghapus gambar yang sudah ada di database
         function deleteImage(imageId) {
             fetch(`/delete-image/${imageId}`, {

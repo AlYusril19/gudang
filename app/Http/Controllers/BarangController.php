@@ -52,7 +52,7 @@ class BarangController extends Controller
             'deskripsi' => 'required|string|max:1024',
             'status' => 'required|string',
             'gambar' => 'nullable', // Bisa kosong
-            'gambar.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:512', // Validasi untuk setiap file dalam array 'fotos'
+            'gambar.*' => 'image|mimes:jpeg,png,jpg,gif,svg', // Validasi untuk setiap file dalam array 'fotos'
         ]);
         $hargaJual = (1 + ($request->harga_jual/100)) * $request->harga_beli; // kali persen request
 
@@ -119,7 +119,7 @@ class BarangController extends Controller
             'deskripsi' => 'required|string|max:1024',
             'status' => 'required|string',
             'gambar' => 'nullable', // Bisa kosong
-            'gambar.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024', // Validasi untuk setiap file dalam array 'fotos'
+            'gambar.*' => 'image|mimes:jpeg,png,jpg,gif,svg', // Validasi untuk setiap file dalam array 'fotos'
         ]);
         
         try {
@@ -164,6 +164,13 @@ class BarangController extends Controller
         if ($barang->penjualans()->count() > 0 || $barang->pembelians()->count() > 0) {
             return redirect()->back()->with('error', 'Barang tidak dapat dihapus, karena digunakan di penjualan / pembelian.');
         }
+        // Hapus gambar-gambar terkait
+        foreach ($barang->galeri as $galeri) {
+            Storage::disk('public')->delete($galeri->file_path);
+        }
+
+        // Hapus data galeri dan barang
+        $barang->galeri()->delete(); // Hapus semua data galeri terkait
         $barang->delete();
 
         return redirect()->route('barang.index')->with('success', 'Barang berhasil dihapus');
