@@ -249,12 +249,17 @@ class PenjualanController extends Controller
                     ], 400);
                 }
 
+                if ($request->kegiatan === 'mitra') {
+                    $hargaJual = $barang->harga_jual;
+                } else {
+                    $hargaJual = $barang->harga_beli;
+                }
                 // Simpan detail penjualan barang
                 $penjualan->PenjualanBarang()->create([
                     'penjualan_id' => $penjualan->id,
                     'barang_id' => $barangData['id'],
                     'jumlah' => $barangData['jumlah'],
-                    'harga_jual' => $barang->harga_jual,
+                    'harga_jual' => $hargaJual,
                 ]);
 
                 // Update stok barang

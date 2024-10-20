@@ -45,16 +45,32 @@ class AdminBerandaController extends Controller
                                 ->whereYear('tanggal_penjualan', $tahunKemarin)
                                 ->where('customer_id', '!=', null)
                                 ->sum('total_harga');
+
+        $perbaikanSekarang = Penjualan::whereMonth('tanggal_penjualan', $bulanSekarang)
+                                ->whereYear('tanggal_penjualan', $tahunSekarang)
+                                ->where('kegiatan', 'perbaikan')
+                                ->sum('total_harga');
+        // get pembelian kemarin
+        $perbaikanKemarin = Penjualan::whereMonth('tanggal_penjualan', $bulanKemarin)
+                                ->whereYear('tanggal_penjualan', $tahunKemarin)
+                                ->where('kegiatan', 'perbaikan')
+                                ->sum('total_harga');
         // banding pembelian sekarang dan kemarin
         $bandingPenjualan = 0;
         if ($pembelianKemarin) {
             $bandingPenjualan = round(($penjualanSekarang-$penjualanKemarin)/$penjualanKemarin*100, 2);
         }
+        $bandingPerbaikan = 0;
+        if ($perbaikanKemarin) {
+            $bandingPerbaikan = round(($perbaikanSekarang-$perbaikanKemarin)/$perbaikanKemarin*100, 2);
+        }
         return view('admin.beranda', [
             'pembelianSekarang' => $pembelianSekarang,
             'bandingPembelian' => $bandingPembelian,
             'penjualanSekarang' => $penjualanSekarang,
-            'bandingPenjualan' => $bandingPenjualan
+            'bandingPenjualan' => $bandingPenjualan,
+            'bandingPerbaikan' => $bandingPerbaikan,
+            'perbaikanSekarang' => $perbaikanSekarang
         ]);
     }
 
