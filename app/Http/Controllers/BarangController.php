@@ -52,7 +52,7 @@ class BarangController extends Controller
             'deskripsi' => 'required|string|max:1024',
             'status' => 'required|string',
             'gambar' => 'nullable', // Bisa kosong
-            'gambar.*' => 'image|mimes:jpeg,png,jpg,gif,svg', // Validasi untuk setiap file dalam array 'fotos'
+            'gambar.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:5120', // Validasi untuk setiap file dalam array 'fotos'
         ]);
         $hargaJual = (1 + ($request->harga_jual/100)) * $request->harga_beli; // kali persen request
 
@@ -119,7 +119,7 @@ class BarangController extends Controller
             'deskripsi' => 'required|string|max:1024',
             'status' => 'required|string',
             'gambar' => 'nullable', // Bisa kosong
-            'gambar.*' => 'image|mimes:jpeg,png,jpg,gif,svg', // Validasi untuk setiap file dalam array 'fotos'
+            'gambar.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:5120', // Validasi untuk setiap file dalam array 'fotos'
         ]);
         
         try {
