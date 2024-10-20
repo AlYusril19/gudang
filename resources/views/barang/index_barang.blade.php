@@ -53,7 +53,16 @@
                     @foreach($barangs as $barang)
                         <tr id="barang-{{ $barang->id }}">
                             <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>{{ $loop->iteration }}</strong></td>
-                            <td>{{ $barang->nama_barang }}</td>
+                            <td>
+                                <ul class="list-unstyled m-0 avatar-group d-flex align-items-center">
+                                    @foreach ($barang->galeri as $foto)
+                                        <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" class="avatar avatar-xs pull-up" aria-label="{{ $barang->nama_barang }}" data-bs-original-title="{{ $barang->nama_barang }}">
+                                            <img src="{{ asset('storage/' . $foto->file_path) }}" alt="Gambar" class="rounded-circle" style="cursor: pointer;" onclick="openImageModal('{{ asset('storage/' . $foto->file_path) }}')">
+                                        </li>
+                                    @endforeach
+                                </ul>
+                                {{ $barang->nama_barang }}
+                            </td>
                             <td>{{ formatRupiah($barang->harga_beli) }}</td>
                             <td>{{ formatRupiah($barang->harga_jual) }}</td>
                             <td>{{ $barang->stok }}</td>
@@ -85,9 +94,25 @@
         </div>
     </div>
     <hr class="my-12">
+
+<!-- Modal untuk menampilkan gambar -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">Dokumentasi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <img id="modalImage" src="" alt="Dokumentasi" class="img-fluid">
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('js')
+    {{-- status aktif arsip --}}
     <script>
         $(document).on('change', '.toggle-status', function() {
             var id = $(this).data('id');
@@ -114,5 +139,17 @@
                 }
             });
         });
+    </script>
+    
+    {{-- gambar barang --}}
+    <script>
+        function openImageModal(imageSrc) {
+            // Set the src of the image inside the modal to the clicked image
+            document.getElementById('modalImage').src = imageSrc;
+
+            // Show the modal
+            var imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
+            imageModal.show();
+        }
     </script>
 @endsection

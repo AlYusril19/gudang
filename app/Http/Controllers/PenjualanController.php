@@ -219,6 +219,7 @@ class PenjualanController extends Controller
             'barang.*.jumlah' => 'required|integer|min:1',
             'kegiatan' => 'required',
             'tanggal_penjualan' => 'required',
+            'customer_id' => 'nullable',
         ]);
 
         try {
@@ -229,7 +230,7 @@ class PenjualanController extends Controller
             $penjualan = Penjualan::create([
                 'user_id' => $request->user_id,
                 'kegiatan' => $request->kegiatan,
-                // 'customer_id' => '4', // Jika tidak ada customer, diisi null
+                'customer_id' => $request->customer_id, // Jika tidak ada customer, diisi null
                 'tanggal_penjualan' => $request->tanggal_penjualan,
             ]);
 

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BarangController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\PembelianController;
 use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\UserController;
@@ -29,6 +30,7 @@ Route::post('/login', [LoginController::class, 'apiLogin']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/get-barang', [BarangController::class, 'getBarangs']);
+    Route::get('/get-customer', [CustomerController::class, 'getCustomers']);
     Route::get('/get-user/{id}', [UserController::class, 'apiUser']);
     Route::put('/user/update', [UserController::class, 'apiUpdate']);
     Route::post('/penjualan', [PenjualanController::class, 'storeApi']);

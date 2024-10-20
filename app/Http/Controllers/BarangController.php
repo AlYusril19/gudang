@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Barang;
+use App\Models\Galeri;
 use App\Models\Kategori;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class BarangController extends Controller
 {
@@ -49,6 +51,8 @@ class BarangController extends Controller
             'harga_jual' => 'required|numeric|min:1|max:100',
             'deskripsi' => 'required|string|max:1024',
             'status' => 'required|string',
+            'gambar' => 'nullable', // Bisa kosong
+            'gambar.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:512', // Validasi untuk setiap file dalam array 'fotos'
         ]);
         $hargaJual = (1 + ($request->harga_jual/100)) * $request->harga_beli; // kali persen request
 
@@ -56,7 +60,7 @@ class BarangController extends Controller
         $kodeBarang = $kodeBarang ? $kodeBarang + 1 : 1;
         $kodeBarang = "K-" . str_pad($kodeBarang, 3, '0', STR_PAD_LEFT);
 
-        Barang::create([
+        $barang = [
             'kode_barang' => $kodeBarang,
             'nama_barang' => $request->nama_barang,
             'kategori_id' => $request->kategori_id,
@@ -64,9 +68,21 @@ class BarangController extends Controller
             'harga_jual' => $hargaJual,
             'deskripsi' => $request->deskripsi,
             'status' => $request->status,
-        ]);
+        ];
+        $barang = Barang::create($barang);
+        $message = '';
+        if ($request->hasFile('gambar')) {
+            foreach ($request->file('gambar') as $foto) {
+                $path = $foto->store('gambar_barang', 'public');
+                Galeri::create([
+                    'barang_id' => $barang->id,
+                    'file_path' => $path,
+                ]);
+            }
+            $message .= 'beserta gambar ';
+        }
 
-        return redirect()->route('barang.index')->with('success', 'Barang berhasil ditambahkan.');
+        return redirect()->route('barang.index')->with('success', 'Barang ' . $message . 'berhasil ditambahkan.');
     }
 
     /**
@@ -74,7 +90,7 @@ class BarangController extends Controller
      */
     public function show(string $id)
     {
-        $barang = Barang::with('kategori')->findOrFail($id);
+        $barang = Barang::with('kategori', 'galeri')->findOrFail($id);
         return view('barang.show_barang', compact('barang'));
     }
 
@@ -102,6 +118,8 @@ class BarangController extends Controller
             'harga_jual' => 'required|numeric|min:1|max:100',
             'deskripsi' => 'required|string|max:1024',
             'status' => 'required|string',
+            'gambar' => 'nullable', // Bisa kosong
+            'gambar.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024', // Validasi untuk setiap file dalam array 'fotos'
         ]);
         
         try {
@@ -119,7 +137,18 @@ class BarangController extends Controller
                 'status' => $request->status,
             ]);
 
-            return redirect()->route('barang.show', $barang->id )->with('success', 'Barang berhasil diupdate');
+            $message = '';
+            if ($request->hasFile('gambar')) {
+                foreach ($request->file('gambar') as $foto) {
+                    $path = $foto->store('gambar_barang', 'public');
+                    Galeri::create([
+                        'barang_id' => $barang->id,
+                        'file_path' => $path,
+                    ]);
+                }
+                $message .= 'beserta foto ';
+            }
+            return redirect()->route('barang.show', $barang->id )->with('success', 'Barang ' . $message . 'berhasil diupdate');
         } catch (\Exception $e) {
             return redirect()->route('barang.edit')->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
@@ -131,7 +160,7 @@ class BarangController extends Controller
     public function destroy(string $id)
     {
         $barang = Barang::findOrFail($id);
-        // Cek apakah kategori sedang digunakan oleh barang
+        // Cek apakah barang sedang digunakan di penjualan / pembelian
         if ($barang->penjualans()->count() > 0 || $barang->pembelians()->count() > 0) {
             return redirect()->back()->with('error', 'Barang tidak dapat dihapus, karena digunakan di penjualan / pembelian.');
         }
@@ -154,6 +183,23 @@ class BarangController extends Controller
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Terjadi kesalahan saat mengubah status barang.']);
         }
+    }
+
+    public function deleteImage($id)
+    {
+        $galeri = Galeri::find($id);
+
+        if ($galeri) {
+            // Hapus file gambar dari storage
+            Storage::disk('public')->delete($galeri->file_path);
+
+            // Hapus data dari database
+            $galeri->delete();
+
+            return response()->json(['success' => true]);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Gambar tidak ditemukan'], 404);
     }
     
     /*  */

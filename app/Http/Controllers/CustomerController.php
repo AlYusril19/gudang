@@ -73,4 +73,12 @@ class CustomerController extends Controller
 
         return redirect()->route('customer.index')->with('success', 'Customer berhasil dihapus');
     }
+
+    // 
+    // DATA API
+    // 
+    public function getCustomers(Request $request) {
+        $customers = Customer::all();
+        return response()->json($customers);
+    }
 }

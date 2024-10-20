@@ -1,5 +1,46 @@
 @extends('layouts.app_sneat')
 
+<style>
+    .image-container {
+        position: relative;
+        display: inline-block;
+        margin: 10px;
+    }
+
+    .image-container img {
+        width: 150px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+
+    .delete-image-btn {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: rgba(255, 0, 0, 0.7);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 25px;
+        height: 25px;
+        font-size: 18px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+    }
+
+    .delete-image-btn:hover {
+        background: rgba(255, 0, 0, 1);
+    }
+
+    #imagePreview {
+        display: flex;
+        flex-wrap: wrap;
+    }
+</style>
+
 @section('content')
 <div class="row justify-content-center">
     <div class="col-xl-12">
@@ -75,6 +116,16 @@
                         </div>
                     </div>
 
+                    <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label" for="gambar">Gambar Barang</label>
+                        <div class="col-sm-10">
+                            <input type="file" name="gambar[]" id="gambar" multiple accept="image/*" onchange="previewImages()">
+                        </div>
+                    </div>
+
+                    <!-- Tempat untuk menampilkan jajaran pratinjau gambar -->
+                    <div id="imagePreview" class="image-preview"></div>
+
                     <div class="mt-4">
                         <button type="submit" class="btn btn-primary me-2">Simpan</button>
                         <button type="{{ route('barang.index') }}" class="btn btn-outline-secondary">Batal</button>
@@ -88,6 +139,7 @@
 @endsection
 
 @section('js')
+    {{-- hitung harga jual --}}
     <script>
         // Fungsi untuk menghitung harga jual
         function hitungHargaJual() {
@@ -107,5 +159,66 @@
         // Event listener untuk memantau perubahan di harga beli dan persen laba
         document.getElementById('harga_beli').addEventListener('input', hitungHargaJual);
         document.getElementById('persen_laba').addEventListener('input', hitungHargaJual);
+    </script>
+
+    {{-- gambar barang --}}
+    {{-- foto dokumentasi --}}
+    <script>
+        // Inisialisasi DataTransfer untuk menyimpan file yang dipilih
+        let selectedFiles = new DataTransfer();
+
+        function previewImages() {
+            var preview = document.getElementById('imagePreview');
+            var input = document.getElementById('gambar');
+            var files = input.files;
+
+            // Loop melalui file yang baru dipilih
+            for (let i = 0; i < files.length; i++) {
+                let file = files[i];
+
+                // Tambahkan file ke DataTransfer
+                selectedFiles.items.add(file);
+
+                // Buat pratinjau gambar
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var container = document.createElement('div');
+                    container.classList.add('image-container');
+
+                    var img = document.createElement('img');
+                    img.src = e.target.result;
+                    container.appendChild(img);
+
+                    var deleteButton = document.createElement('button');
+                    deleteButton.textContent = '×';
+                    deleteButton.classList.add('delete-image-btn');
+
+                    // Event untuk menghapus gambar
+                    deleteButton.onclick = function() {
+                        // Hapus file dari DataTransfer
+                        for (let j = 0; j < selectedFiles.items.length; j++) {
+                            if (file.name === selectedFiles.items[j].getAsFile().name) {
+                                selectedFiles.items.remove(j);
+                                break;
+                            }
+                        }
+
+                        // Update input files
+                        input.files = selectedFiles.files;
+
+                        // Hapus pratinjau gambar
+                        container.remove();
+                    };
+
+                    container.appendChild(deleteButton);
+                    preview.appendChild(container);
+                };
+
+                reader.readAsDataURL(file);
+            }
+
+            // Update input files dengan file yang sudah ditambahkan
+            input.files = selectedFiles.files;
+        }
     </script>
 @endsection

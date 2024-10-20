@@ -43,6 +43,7 @@ Route::group(['middleware' => ['auth', 'role:admin']], function () {
 
     Route::resource('/admin/barang', BarangController::class);
     Route::post('/admin/barang/toggle-status', [BarangController::class, 'toggleStatus'])->name('barang.toggleStatus');
+    Route::delete('/delete-image/{id}', [BarangController::class, 'deleteImage'])->name('delete-image');
     
     Route::resource('/admin/kategori', KategoriController::class);
 

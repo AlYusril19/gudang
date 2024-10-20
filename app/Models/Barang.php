@@ -40,4 +40,8 @@ class Barang extends Model
                     ->withPivot('jumlah', 'harga_beli')
                     ->withTimestamps();
     }
+    public function galeri()
+    {
+        return $this->hasMany(Galeri::class, 'barang_id');
+    }
 }
