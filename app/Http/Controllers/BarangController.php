@@ -229,5 +229,22 @@ class BarangController extends Controller
         // Kembalikan sebagai JSON response
         return response()->json($barangs);
     }
+    public function getBarangsKembali(Request $request)
+    {
+        $orderBy = $request->get('order_by', 'nama_barang');  // Default sorting by nama_barang
+        $direction = $request->get('direction', 'asc');       // Default direction is ascending
+        $search = 'second';  // Ambil parameter pencarian
+
+        // Query dengan pencarian dan pengurutan
+        $barangs = Barang::when($search, function ($query, $search) {
+                return $query->where('nama_barang', 'like', "%{$search}%");
+            })
+            ->whereRaw('status != "arsip"')
+            ->orderBy($orderBy, $direction)
+            ->get();
+
+        // Kembalikan sebagai JSON response
+        return response()->json($barangs);
+    }
 
 }
