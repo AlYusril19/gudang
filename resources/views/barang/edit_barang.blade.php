@@ -99,7 +99,7 @@
                     <div class="row mb-3">
                         <label class="col-sm-2 col-form-label" for="harga_beli">Harga Beli</label>
                         <div class="col-sm-10">
-                            <input type="number" class="form-control" id="harga_beli" name="harga_beli" value="{{ $barang->harga_beli }}" min="500" required>
+                            <input type="number" class="form-control" id="harga_beli" name="harga_beli" value="{{ $barang->harga_beli }}" min="100" required>
                         </div>
                     </div>
 
@@ -107,7 +107,7 @@
                         <label class="col-sm-2 col-form-label" for="persen_laba">Persen Laba</label>
                         <div class="col-sm-10">
                             <div class="input-group">
-                                <input type="number" class="form-control" id="persen_laba" name="persen_laba" value="{{ $persenJual }}" min="1" max="100" required>
+                                <input type="number" class="form-control" id="persen_laba" name="persen_laba" value="{{ $persenJual }}" min="1" required>
                                 <span class="input-group-text">%</span>
                             </div>
                         </div>
