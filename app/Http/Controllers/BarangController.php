@@ -48,7 +48,7 @@ class BarangController extends Controller
             'nama_barang' => 'required|string|max:32|unique:barang',
             'kategori_id' => 'nullable|exists:kategori,id',
             'harga_beli' => 'required|numeric',
-            'harga_jual' => 'required|numeric|min:1|max:100',
+            'harga_jual' => 'required|numeric|min:1',
             'deskripsi' => 'required|string|max:1024',
             'status' => 'required|string',
             'gambar' => 'nullable', // Bisa kosong
@@ -115,7 +115,7 @@ class BarangController extends Controller
             'nama_barang' => 'required|string|max:32|unique:barang,nama_barang,'.$id,
             'kategori_id' => 'nullable|exists:kategori,id',
             'harga_beli' => 'required|numeric',
-            'harga_jual' => 'required|numeric|min:1|max:100',
+            'harga_jual' => 'required|numeric|min:1',
             'deskripsi' => 'required|string|max:1024',
             'status' => 'required|string',
             'gambar' => 'nullable', // Bisa kosong
