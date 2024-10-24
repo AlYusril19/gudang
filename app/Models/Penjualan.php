@@ -13,7 +13,8 @@ class Penjualan extends Model
         'tanggal_penjualan', 
         'total_harga', 
         'user_id',
-        'kegiatan'
+        'kegiatan',
+        'laporan_id',
     ];
 
     public function penjualanBarang()

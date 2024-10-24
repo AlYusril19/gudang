@@ -18,7 +18,7 @@ class LoginController extends Controller
         $userRole = auth()->user()->role ?? null;
         // Redirect ke dashboard atau halaman lain
         if ($userRole) {
-            if ($userRole === 'admin') {
+            if ($userRole === 'admin' || $userRole === 'superadmin') {
                 return redirect()->intended($this->redirectAdmin);
             }
             if ($userRole == 'operator') {
@@ -41,7 +41,7 @@ class LoginController extends Controller
             $user = Auth::user();
 
             // Redirect berdasarkan role user
-            if ($user->role == 'admin') {
+            if ($user->role == 'admin' || $user->role == 'superadmin') {
                 return redirect()->intended($this->redirectAdmin);
             } elseif ($user->role == 'operator') {
                 return redirect()->intended($this->redirectOperator);

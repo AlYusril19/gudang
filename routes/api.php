@@ -34,7 +34,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/get-user/{id}', [UserController::class, 'apiUser']);
     Route::put('/user/update', [UserController::class, 'apiUpdate']);
     Route::post('/penjualan', [PenjualanController::class, 'storeApi']);
+    Route::post('/penjualan-destroy', [PenjualanController::class, 'destroyApi']);
     Route::post('/pembelian', [PembelianController::class, 'storeApi']);
+    Route::post('/pembelian-destroy', [PembelianController::class, 'destroyApi']);
 });
     Route::get('/get-barang-kembali', [BarangController::class, 'getBarangsKembali']);
 

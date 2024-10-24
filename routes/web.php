@@ -34,7 +34,7 @@ Route::get('/', [LoginController::class, 'showLoginForm'])->name('showLoginForm'
 Auth::routes();
 
 // Role User Admin
-Route::group(['middleware' => ['auth', 'role:admin']], function () {
+Route::group(['middleware' => ['auth', 'role:admin,superadmin']], function () {
     // Route untuk admin
     // Route::get('/admin/dashboard', [AdminBerandaController::class, 'index'])->name('admin.index');
     Route::resource('/admin/dashboard', AdminBerandaController::class);

@@ -143,8 +143,10 @@ class PenjualanController extends Controller
             // Temukan data penjualan
             $penjualan = Penjualan::findOrFail($id);
             $user = auth()->user()->id;
-            if ($penjualan->user_id != $user) {
-                return redirect()->back()->with('error', 'Data gagal dihapus karena berkaitan dengan user lain, silahkan hubungi user yang bersangkutan');
+            if ($user->role != 'superadmin') {
+                if ($penjualan->user_id != $user) {
+                    return redirect()->back()->with('error', 'Data gagal dihapus karena berkaitan dengan user lain, silahkan hubungi user yang bersangkutan');
+                }
             }
 
             // Kembalikan stok barang
@@ -220,6 +222,7 @@ class PenjualanController extends Controller
             'kegiatan' => 'required',
             'tanggal_penjualan' => 'required',
             'customer_id' => 'nullable',
+            'laporan_id' => 'required',
         ]);
 
         try {
@@ -232,6 +235,7 @@ class PenjualanController extends Controller
                 'kegiatan' => $request->kegiatan,
                 'customer_id' => $request->customer_id, // Jika tidak ada customer, diisi null
                 'tanggal_penjualan' => $request->tanggal_penjualan,
+                'laporan_id' => $request->laporan_id,
             ]);
 
             $totalHarga = 0;
@@ -295,4 +299,55 @@ class PenjualanController extends Controller
             ], 500);
         }
     }
+
+    public function destroyApi(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+
+            // Ambil data created_at dan user_id dari request
+            $laporanId = $request->laporan_id;
+
+            // Temukan data penjualan berdasarkan created_at dan user_id
+            $penjualan = Penjualan::where('laporan_id', $laporanId)
+                                ->first();
+
+            // Jika penjualan tidak ditemukan, kembalikan response error
+            if (!$penjualan) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Data penjualan tidak ditemukan atau bukan milik user yang bersangkutan.'
+                ], 404); // 404 Not Found
+            }
+
+            // Kembalikan stok barang
+            foreach ($penjualan->penjualanBarang as $detail) {
+                $barang = Barang::find($detail->barang_id);
+                $barang->stok += $detail->jumlah;
+                $barang->save();
+            }
+
+            // Hapus detail penjualan
+            $penjualan->penjualanBarang()->delete();
+
+            // Hapus data penjualan utama
+            $penjualan->delete();
+
+            DB::commit();
+
+            // Response sukses
+            return response()->json([
+                'success' => true,
+                'message' => 'Data penjualan berhasil dihapus.'
+            ], 200); // 200 OK
+        } catch (\Exception $e) {
+            DB::rollBack();
+            // Response error
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500); // 500 Internal Server Error
+        }
+    }
+
 }

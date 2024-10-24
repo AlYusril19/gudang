@@ -213,8 +213,10 @@ class PembelianController extends Controller
             $pembelian = Pembelian::findOrFail($id);
             $user = auth()->user()->id;
 
-            if ($pembelian->user_id != $user) {
-                return redirect()->back()->with('error', 'Data gagal dihapus karena berkaitan dengan user lain, silahkan hubungi user yang bersangkutan');
+            if ($user->role != 'superadmin') {
+                if ($pembelian->user_id != $user) {
+                    return redirect()->back()->with('error', 'Data gagal dihapus karena berkaitan dengan user lain, silahkan hubungi user yang bersangkutan');
+                }
             }
             
             // Kembalikan stok barang
@@ -263,6 +265,7 @@ class PembelianController extends Controller
             'barang.*.jumlah' => 'required|integer|min:1',
             'kegiatan' => 'required',
             'tanggal_pembelian' => 'required',
+            'laporan_id' => 'required',
         ]);
 
         try {
@@ -274,6 +277,7 @@ class PembelianController extends Controller
                 'user_id' => $request->user_id,
                 'kegiatan' => $request->kegiatan,
                 'tanggal_pembelian' => $request->tanggal_pembelian,
+                'laporan_id' => $request->laporan_id,
             ]);
 
             $totalHarga = 0;
@@ -324,48 +328,53 @@ class PembelianController extends Controller
         }
     }
 
-    public function destroyApi($id)
+    public function destroyApi(string $id)
     {
         try {
-            // Mulai transaksi database
             DB::beginTransaction();
 
-            // Cari data pembelian berdasarkan ID
-            $pembelian = Pembelian::with('pembelianBarang')->findOrFail($id);
+            // Temukan data pembelian
+            $pembelian = Pembelian::findOrFail($id);
+            $user = auth()->user()->id;
 
-            // Looping untuk setiap barang di dalam pembelian yang akan dihapus
-            foreach ($pembelian->pembelianBarang as $pembelianBarang) {
-                $barang = Barang::findOrFail($pembelianBarang->barang_id);
+            // Cek apakah pembelian milik user yang sedang login
+            if ($pembelian->user_id != $user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Data gagal dihapus karena berkaitan dengan user lain, silahkan hubungi user yang bersangkutan.'
+                ], 403); // 403 Forbidden
+            }
 
-                // Kembalikan stok barang
-                $barang->stok -= $pembelianBarang->jumlah;
-                $barang->save();
+            // Kembalikan stok barang
+            foreach ($pembelian->pembelianBarang as $detail) {
+                $barang = Barang::find($detail->barang_id);
+                if ($barang) {
+                    $barang->stok -= $detail->jumlah;
+                    $barang->save();
+                }
             }
 
             // Hapus detail pembelian
             $pembelian->pembelianBarang()->delete();
 
-            // Hapus pembelian utama
+            // Hapus data pembelian utama
             $pembelian->delete();
 
-            // Commit transaksi
             DB::commit();
 
-            // Berikan respon sukses
+            // Response sukses
             return response()->json([
-                'status' => 'success',
-                'message' => 'Pembelian berhasil dihapus.'
-            ], 200);
-
+                'success' => true,
+                'message' => 'Data pembelian berhasil dihapus.'
+            ], 200); // 200 OK
         } catch (\Exception $e) {
-            // Rollback jika ada error
             DB::rollBack();
 
-            // Berikan respon gagal
+            // Response error
             return response()->json([
-                'status' => 'error',
+                'success' => false,
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()
-            ], 500);
+            ], 500); // 500 Internal Server Error
         }
     }
 }
