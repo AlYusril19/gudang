@@ -142,9 +142,9 @@ class PenjualanController extends Controller
 
             // Temukan data penjualan
             $penjualan = Penjualan::findOrFail($id);
-            $user = auth()->user()->id;
+            $user = auth()->user();
             if ($user->role != 'superadmin') {
-                if ($penjualan->user_id != $user) {
+                if ($penjualan->user_id != $user->id) {
                     return redirect()->back()->with('error', 'Data gagal dihapus karena berkaitan dengan user lain, silahkan hubungi user yang bersangkutan');
                 }
             }

@@ -211,10 +211,10 @@ class PembelianController extends Controller
 
             // Temukan data pembelian
             $pembelian = Pembelian::findOrFail($id);
-            $user = auth()->user()->id;
+            $user = auth()->user();
 
             if ($user->role != 'superadmin') {
-                if ($pembelian->user_id != $user) {
+                if ($pembelian->user_id != $user->id) {
                     return redirect()->back()->with('error', 'Data gagal dihapus karena berkaitan dengan user lain, silahkan hubungi user yang bersangkutan');
                 }
             }
