@@ -19,7 +19,7 @@ class PembelianController extends Controller
         $search = $request->input('search');
 
         // Query untuk mengambil data pembelian
-        $query = Pembelian::with('supplier', 'pembelianBarang.barang')->orderBy('created_at', 'DESC');;
+        $query = Pembelian::with('supplier', 'pembelianBarang.barang')->orderBy('tanggal_pembelian', 'DESC');;
 
         // Jika ada input pencarian
         if ($search) {

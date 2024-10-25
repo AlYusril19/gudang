@@ -20,7 +20,7 @@ class PenjualanController extends Controller
         $search = $request->input('search');
 
         // Query untuk mengambil data penjualan
-        $query = Penjualan::with('customer', 'user' , 'penjualanBarang.barang')->orderBy('created_at', 'DESC');;
+        $query = Penjualan::with('customer', 'user' , 'penjualanBarang.barang')->orderBy('tanggal_penjualan', 'DESC');;
 
         // Jika ada input pencarian
         if ($search) {
