@@ -328,21 +328,24 @@ class PembelianController extends Controller
         }
     }
 
-    public function destroyApi(string $id)
+    public function destroyApi(Request $request)
     {
         try {
             DB::beginTransaction();
 
-            // Temukan data pembelian
-            $pembelian = Pembelian::findOrFail($id);
-            $user = auth()->user()->id;
+            // Ambil data created_at dan user_id dari request
+            $laporanId = $request->laporan_id;
 
-            // Cek apakah pembelian milik user yang sedang login
-            if ($pembelian->user_id != $user) {
+            // Temukan data penjualan berdasarkan created_at dan user_id
+            $pembelian = Pembelian::where('laporan_id', $laporanId)
+                                ->first();
+
+            // Jika penjualan tidak ditemukan, kembalikan response error
+            if (!$pembelian) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Data gagal dihapus karena berkaitan dengan user lain, silahkan hubungi user yang bersangkutan.'
-                ], 403); // 403 Forbidden
+                    'message' => 'Data penjualan tidak ditemukan atau bukan milik user yang bersangkutan.'
+                ], 404); // 404 Not Found
             }
 
             // Kembalikan stok barang
