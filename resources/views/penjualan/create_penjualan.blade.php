@@ -18,7 +18,7 @@
             <!-- Barang Selection -->
             <div class="form-group mt-2">
                 <label for="barang_id">Barang</label>
-                <select name="barang_id" id="barang_id" class="form-control">
+                <select name="barang_id" id="barang_id" class="form-control select2">
                     <option value="">Pilih Barang</option>
                     @foreach($barang as $b)
                         <option value="{{ $b->id }}" data-harga="{{ $b->harga_jual }}">{{ $b->nama_barang }} | {{ formatRupiah($b->harga_jual) }}</option>

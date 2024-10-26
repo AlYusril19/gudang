@@ -82,7 +82,7 @@
                         <label class="col-sm-2 col-form-label" for="persen_laba">Persen Laba</label>
                         <div class="col-sm-10">
                             <div class="input-group">
-                                <input type="number" class="form-control" id="persen_laba" name="persen_laba" placeholder="20" min="1" max="100" required>
+                                <input type="number" class="form-control" id="persen_laba" name="persen_laba" placeholder="20" min="1" required>
                                 <span class="input-group-text">%</span>
                             </div>
                         </div>
@@ -98,6 +98,15 @@
 
                     <!-- Hidden input untuk mengirim harga jual yang sebenarnya ke server -->
                     <input type="hidden" id="harga_jual" name="harga_jual">
+
+                    <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label" for="stok_minimal">Stok Minimal</label>
+                        <div class="col-sm-10">
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="stok_minimal" name="stok_minimal" placeholder="10" required>
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="row mb-3">
                         <label class="col-sm-2 col-form-label" for="deskripsi">Deskripsi</label>

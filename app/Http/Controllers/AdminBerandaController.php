@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Barang;
 use App\Models\Pembelian;
 use App\Models\Penjualan;
 use Carbon\Carbon;
@@ -21,13 +22,20 @@ class AdminBerandaController extends Controller
         $bulanKemarin = $now->subMonth()->month;
         $tahunKemarin = $now->subMonth()->year;
 
+        // stok menipis
+        $stokMinim = Barang::where('status', 'aktif')
+                        ->whereRaw('stok <= stok_minimal')
+                        ->count();
+
         // get pembelian sekarang
         $pembelianSekarang = Pembelian::whereMonth('tanggal_pembelian', $bulanSekarang)
                                 ->whereYear('tanggal_pembelian', $tahunSekarang)
+                                ->whereNull('kegiatan')
                                 ->sum('total_harga');
         // get pembelian kemarin
         $pembelianKemarin = Pembelian::whereMonth('tanggal_pembelian', $bulanKemarin)
                                 ->whereYear('tanggal_pembelian', $tahunKemarin)
+                                ->whereNull('kegiatan')
                                 ->sum('total_harga');
         // banding pembelian sekarang dan kemarin
         $bandingPembelian = 0;
@@ -40,7 +48,7 @@ class AdminBerandaController extends Controller
                                 ->whereYear('tanggal_penjualan', $tahunSekarang)
                                 ->where('customer_id', '!=', null)
                                 ->sum('total_harga');
-        // get pembelian kemarin
+        // get penjualan kemarin
         $penjualanKemarin = Penjualan::whereMonth('tanggal_penjualan', $bulanKemarin)
                                 ->whereYear('tanggal_penjualan', $tahunKemarin)
                                 ->where('customer_id', '!=', null)
@@ -70,7 +78,8 @@ class AdminBerandaController extends Controller
             'penjualanSekarang' => $penjualanSekarang,
             'bandingPenjualan' => $bandingPenjualan,
             'bandingPerbaikan' => $bandingPerbaikan,
-            'perbaikanSekarang' => $perbaikanSekarang
+            'perbaikanSekarang' => $perbaikanSekarang,
+            'stokMinim' => $stokMinim
         ]);
     }
 

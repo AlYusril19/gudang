@@ -9,11 +9,11 @@
                         <div class="card-body">
                             {{-- {{ __('You are logged in!') }} --}}
                             <h5 class="card-title text-primary mb-3">Welcome {{ auth()->user()->role }} {{ auth()->user()->name }} 🎉</h5>
-                            <p class="mb-6">You have 0 item data with low stock.<br>Check in bottom.</p>
+                            <p class="mb-6">You have {{ $stokMinim }} item data with low stock.<br>Check in bottom.</p>
                             
-                            {{-- @if ($barangMenipis)
-                                <a href="{{ route('laporan-admin.create') }}" class="btn btn-sm btn-outline-primary">View Pendings</a>
-                            @endif --}}
+                            @if ($stokMinim)
+                                <a href="{{ route('barang.index') }}" class="btn btn-sm btn-outline-primary">Cek Item</a>
+                            @endif
                         </div>
                     </div>
                     <div class="col-sm-5 text-center text-sm-left">

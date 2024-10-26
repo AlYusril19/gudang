@@ -125,6 +125,15 @@
                     <input type="hidden" id="harga_jual" name="harga_jual">
 
                     <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label" for="stok_minimal">Stok Minimal</label>
+                        <div class="col-sm-10">
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="stok_minimal" name="stok_minimal" value="{{ $barang->stok_minimal }}" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
                         <label class="col-sm-2 col-form-label" for="deskripsi">Deskripsi</label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control" id="deskripsi" name="deskripsi" value="{{ $barang->deskripsi }}" required>

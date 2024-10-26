@@ -24,8 +24,15 @@ class BarangController extends Controller
                 return $query->where('nama_barang', 'like', "%{$search}%");
             })
             ->orderByRaw("status = 'aktif' DESC")
+            ->selectRaw('*, stok <= stok_minimal AS is_stok_minim, status = "aktif" AS is_aktif')
             ->orderBy($orderBy, $direction)
             ->get();
+        
+        // cek stok barang menipis
+        // $stokMinim = Barang::where('status', 'aktif')
+        //                 ->whereRaw('stok <= stok_minimal')
+        //                 ->get();
+        // dd($stokMinim);
 
         return view('barang.index_barang', compact('barangs', 'orderBy', 'direction', 'search'));
     }
@@ -51,6 +58,7 @@ class BarangController extends Controller
             'harga_jual' => 'required|numeric|min:1',
             'deskripsi' => 'required|string|max:1024',
             'status' => 'required|string',
+            'stok_minimal' => 'required|numeric',
             'gambar' => 'nullable', // Bisa kosong
             'gambar.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:5120', // Validasi untuk setiap file dalam array 'fotos'
         ]);
@@ -67,6 +75,7 @@ class BarangController extends Controller
             'harga_beli' => $request->harga_beli,
             'harga_jual' => $hargaJual,
             'deskripsi' => $request->deskripsi,
+            'stok_minimal' => $request->stok_minimal,
             'status' => $request->status,
         ];
         $barang = Barang::create($barang);
@@ -118,6 +127,7 @@ class BarangController extends Controller
             'harga_jual' => 'required|numeric|min:1',
             'deskripsi' => 'required|string|max:1024',
             'status' => 'required|string',
+            'stok_minimal' => 'required|numeric',
             'gambar' => 'nullable', // Bisa kosong
             'gambar.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:5120', // Validasi untuk setiap file dalam array 'fotos'
         ]);
@@ -134,6 +144,7 @@ class BarangController extends Controller
                 'harga_beli' => $request->harga_beli,
                 'harga_jual' => $hargaJual,
                 'deskripsi' => $request->deskripsi,
+                'stok_minimal' => $request->stok_minimal,
                 'status' => $request->status,
             ]);
 
