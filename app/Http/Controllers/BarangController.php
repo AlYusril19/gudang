@@ -24,15 +24,9 @@ class BarangController extends Controller
                 return $query->where('nama_barang', 'like', "%{$search}%");
             })
             ->orderByRaw("status = 'aktif' DESC")
-            ->selectRaw('*, stok <= stok_minimal AS is_stok_minim, status = "aktif" AS is_aktif')
+            ->selectRaw('*, stok <= stok_minimal AS is_stok_minim, status = "aktif" AS is_aktif, nama_barang not like "%second%" AS isnot_second')
             ->orderBy($orderBy, $direction)
             ->get();
-        
-        // cek stok barang menipis
-        // $stokMinim = Barang::where('status', 'aktif')
-        //                 ->whereRaw('stok <= stok_minimal')
-        //                 ->get();
-        // dd($stokMinim);
 
         return view('barang.index_barang', compact('barangs', 'orderBy', 'direction', 'search'));
     }

@@ -67,7 +67,7 @@
                             <td>{{ formatRupiah($barang->harga_jual) }}</td>
                             {{-- <td>{{ $barang->stok }}</td> --}}
                             <td>
-                                @if ($barang->is_stok_minim && $barang->is_aktif)
+                                @if ($barang->is_stok_minim && $barang->is_aktif && $barang->isnot_second)
                                     <span class="text-truncate d-flex align-items-center text-heading">
                                         <span class="w-px-20 h-px-20 rounded-circle d-flex justify-content-center align-items-center bg-label-danger me-2 p-2">
                                             <i class="bx bx-cart"></i>
