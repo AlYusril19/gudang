@@ -84,7 +84,7 @@
                         </div>
                     </div>
                 </div>
-                {{-- pemasangan --}}
+                {{-- perbaikan --}}
                 <div class="col-lg-4 col-md-12 col-6 mb-4">
                     <div class="card">
                         <div class="card-body">
@@ -97,8 +97,10 @@
                                         <i class="bx bx-dots-vertical-rounded"></i>
                                     </button>
                                     <div class="dropdown-menu" aria-labelledby="cardOpt1">
-                                        <a class="dropdown-item" href="{{ route('pembelian.index') }}">View More</a>
-                                        {{-- <a class="dropdown-item" href="javascript:void(0);">Delete</a> --}}
+                                        <form action="{{ route('pembelian.index') }}" method="GET" class="d-flex me-2">
+                                            <button type="submit" class="dropdown-item" name="search" value="perbaikan">View More</button>
+                                        </form>
+                                        {{-- <a class="dropdown-item" href="{{ route('pembelian.index') }}">View More</a> --}}
                                     </div>
                                 </div>
                             </div>

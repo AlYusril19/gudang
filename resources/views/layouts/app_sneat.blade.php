@@ -154,7 +154,7 @@
             </li>
 
             <!-- Layouts -->
-            <li class="menu-item {{ \Route::is('barang.*') ||\Route::is('kategori.*') || \Route::is('pembelian.*') || \Route::is('penjualan.*') ? 'active open' : '' }}">
+            <li class="menu-item {{ \Route::is('barang.*') || \Route::is('kategori.*') ? 'active open' : '' }}">
               <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons bx bx-package"></i>
                 <div data-i18n="Layouts">Data Barang</div>
@@ -173,17 +173,38 @@
                   </a>
                 </li>
               </ul>
+            </li>
+
+            <li class="menu-item {{ \Route::is('pembelian.*') || \Route::is('penjualan.*') ? 'active open' : '' }}">
+              <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons bx bx-cart"></i>
+                <div data-i18n="Layouts">Transaksi</div>
+              </a>
               <ul class="menu-sub">
-                <li class="menu-item {{ \Route::is('pembelian.*') ? 'active' : '' }}">
+                <li class="menu-item {{ \Route::is('pembelian.index') ? 'active' : '' }}">
                   <a href="{{ route('pembelian.index') }}" class="menu-link">
-                    <div data-i18n="Without menu">Daftar Pembelian</div>
+                    <div data-i18n="Without menu">Pembelian</div>
                   </a>
                 </li>
               </ul>
               <ul class="menu-sub">
-                <li class="menu-item {{ \Route::is('penjualan.*') ? 'active' : '' }}">
+                <li class="menu-item {{ \Route::is('penjualan.index') ? 'active' : '' }}">
                   <a href="{{ route('penjualan.index') }}" class="menu-link">
-                    <div data-i18n="Without menu">Daftar Penjualan</div>
+                    <div data-i18n="Without menu">Penjualan</div>
+                  </a>
+                </li>
+              </ul>
+              <ul class="menu-sub">
+                <li class="menu-item {{ \Route::is('pembelian.indexBarangMasuk') ? 'active' : '' }}">
+                  <a href="{{ route('pembelian.indexBarangMasuk') }}" class="menu-link">
+                    <div data-i18n="Without menu">Barang Masuk</div>
+                  </a>
+                </li>
+              </ul>
+              <ul class="menu-sub">
+                <li class="menu-item {{ \Route::is('penjualan.indexBarangKeluar') ? 'active' : '' }}">
+                  <a href="{{ route('penjualan.indexBarangKeluar') }}" class="menu-link">
+                    <div data-i18n="Without menu">Barang Keluar</div>
                   </a>
                 </li>
               </ul>

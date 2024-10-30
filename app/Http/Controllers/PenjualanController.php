@@ -20,7 +20,9 @@ class PenjualanController extends Controller
         $search = $request->input('search');
 
         // Query untuk mengambil data penjualan
-        $query = Penjualan::with('customer', 'user' , 'penjualanBarang.barang')->orderBy('tanggal_penjualan', 'DESC');;
+        $query = Penjualan::with('customer', 'user' , 'penjualanBarang.barang')
+                    ->orderBy('tanggal_penjualan', 'DESC')
+                    ->whereNull('kegiatan');
 
         // Jika ada input pencarian
         if ($search) {
@@ -38,6 +40,33 @@ class PenjualanController extends Controller
 
         // Kirim hasil ke view
         return view('penjualan.index_penjualan', compact('penjualan'));
+    }
+
+    public function indexBarangKeluar(Request $request)
+    {
+        $search = $request->input('search');
+
+        // Query untuk mengambil data penjualan
+        $query = Penjualan::with('customer', 'user' , 'penjualanBarang.barang')
+                    ->orderBy('tanggal_penjualan', 'DESC')
+                    ->where('kegiatan', '!=', 'null');
+
+        // Jika ada input pencarian
+        if ($search) {
+            $query->whereHas('customer', function ($q) use ($search) {
+                $q->where('nama', 'like', "%$search%");
+            })
+            ->orWhereHas('user', function ($q) use ($search) {
+                $q->where('name', 'like', "%$search%");
+            })
+            ->orWhere('tanggal_penjualan', 'like', "%$search%");
+        }
+
+        // Dapatkan hasil query
+        $penjualan = $query->get();
+
+        // Kirim hasil ke view
+        return view('penjualan.index_barang_keluar', compact('penjualan'));
     }
 
     /**
@@ -164,7 +193,7 @@ class PenjualanController extends Controller
 
             DB::commit();
 
-            return redirect()->route('penjualan.index')->with('success', 'Data penjualan berhasil dihapus.');
+            return redirect()->back()->with('success', 'Data berhasil dihapus: ');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());

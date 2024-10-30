@@ -19,7 +19,9 @@ class PembelianController extends Controller
         $search = $request->input('search');
 
         // Query untuk mengambil data pembelian
-        $query = Pembelian::with('supplier', 'pembelianBarang.barang')->orderBy('tanggal_pembelian', 'DESC');;
+        $query = Pembelian::with('supplier', 'pembelianBarang.barang')
+                    ->orderBy('tanggal_pembelian', 'DESC')
+                    ->whereNull('kegiatan');
 
         // Jika ada input pencarian
         if ($search) {
@@ -34,6 +36,28 @@ class PembelianController extends Controller
 
         // Kirim hasil ke view
         return view('pembelian.index_pembelian', compact('pembelians'));
+    }
+
+    public function indexBarangMasuk(Request $request)
+    {
+        $search = $request->input('search');
+
+        // Query untuk mengambil data pembelian
+        $query = Pembelian::with( 'pembelianBarang.barang')
+                    ->orderBy('tanggal_pembelian', 'DESC')
+                    ->where('kegiatan', '!=', 'null');
+
+        // Jika ada input pencarian
+        if ($search) {
+            $query->Where('tanggal_pembelian', 'like', "%$search%")
+            ->orWhere('kegiatan', 'like', "%$search%");
+        }
+
+        // Dapatkan hasil query
+        $pembelians = $query->get();
+
+        // Kirim hasil ke view
+        return view('pembelian.index_barang_masuk', compact('pembelians'));
     }
 
     /**
@@ -234,7 +258,7 @@ class PembelianController extends Controller
 
             DB::commit();
 
-            return redirect()->route('pembelian.index')->with('success', 'Data Pembelian berhasil dihapus.');
+            return redirect()->back()->with('success', 'Data berhasil dihapus: ');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());

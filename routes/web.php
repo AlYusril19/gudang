@@ -48,9 +48,11 @@ Route::group(['middleware' => ['auth', 'role:admin,superadmin']], function () {
     Route::resource('/admin/kategori', KategoriController::class);
 
     Route::resource('/admin/pembelian', PembelianController::class);
+    Route::get('/admin/barang-masuk', [PembelianController::class, 'indexBarangMasuk'])->name('pembelian.indexBarangMasuk');
     Route::get('/pembelian/getHargaBeli', [PembelianController::class, 'getHargaBeli'])->name('pembelian.getHargaBeli');
 
     Route::resource('/admin/penjualan', PenjualanController::class);
+    Route::get('/admin/barang-keluar', [PenjualanController::class, 'indexBarangKeluar'])->name('penjualan.indexBarangKeluar');
     Route::post('/get-harga-jual', [PenjualanController::class, 'getHargaJual']);
     Route::get('/get-stok/{id}', [PenjualanController::class, 'getStok']);
 

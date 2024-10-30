@@ -1,12 +1,17 @@
 @extends('layouts.app_sneat')
 
 @section('content')
-    {{-- <h5 class="pb-1 mb-6">Data Peserta</h5> --}}
-    <div class="card">
+    @include('barang.navbar_index_barang')
+    <div class="card mt-2">
         <div class="card-header d-flex justify-content-between align-items-center">
             <a href="{{ route('barang.create') }}" class="btn btn-primary mb-0">Tambah Item</a>
-            <div class=" align-items-center">
+            <div class="align-items-center">
                 <form action="{{ route('barang.index') }}" method="GET" class="d-flex me-2">
+                    <input type="hidden" name="status" value="{{ request('status') }}">
+                    <!-- Hanya tambahkan stok_minimal jika benar-benar dipilih -->
+                    @if(request('stok_minimal'))
+                        <input type="hidden" name="stok_minimal" value="stok_minimal">
+                    @endif
                     <input type="text" name="search" class="form-control" placeholder="Cari Barang" value="{{ request('search') }}">
                     <button type="submit" class="btn btn-primary">Cari</button>
                 </form>

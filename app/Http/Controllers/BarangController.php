@@ -15,18 +15,27 @@ class BarangController extends Controller
      */
     public function index(Request $request)
     {
-        $orderBy = $request->get('order_by', 'nama_barang');  // Default sorting by nama_barang
-        $direction = $request->get('direction', 'asc');       // Default direction is ascending
-        $search = $request->get('search');  // Ambil parameter pencarian
+        $orderBy = $request->get('order_by', 'nama_barang');
+        $direction = $request->get('direction', 'asc');
+        $search = $request->get('search');
+        $status = $request->get('status'); // Tambahkan parameter untuk status
+        $stokMinimal = $request->has('stok_minimal');
 
-        // Query dengan pencarian dan pengurutan
         $barangs = Barang::when($search, function ($query, $search) {
-                return $query->where('nama_barang', 'like', "%{$search}%");
-            })
-            ->orderByRaw("status = 'aktif' DESC")
-            ->selectRaw('*, stok <= stok_minimal AS is_stok_minim, status = "aktif" AS is_aktif, nama_barang not like "%second%" AS isnot_second')
-            ->orderBy($orderBy, $direction)
-            ->get();
+            return $query->where('nama_barang', 'like', "%{$search}%");
+        })
+        ->when($status, function ($query, $status) {
+            return $query->where('status', $status);
+        })
+        ->when($stokMinimal, function ($query) {
+            return $query->whereColumn('stok', '<=', 'stok_minimal')
+                         ->where('nama_barang', 'not like', '%second%')
+                         ->where('status', '!=', 'arsip');
+        })
+        ->orderByRaw("status = 'aktif' DESC")
+        ->selectRaw('*, stok <= stok_minimal AS is_stok_minim, status = "aktif" AS is_aktif, nama_barang not like "%second%" AS isnot_second')
+        ->orderBy($orderBy, $direction)
+        ->get();
 
         return view('barang.index_barang', compact('barangs', 'orderBy', 'direction', 'search'));
     }
