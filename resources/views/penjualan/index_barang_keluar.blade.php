@@ -9,8 +9,8 @@
         <div class="card-header d-flex justify-content-between align-items-center">
             {{-- <a href="{{ route('penjualan.create') }}" class="btn btn-primary mb-0">Barang Keluar</a> --}}
             <div class=" align-items-center">
-                <form action="{{ route('penjualan.index') }}" method="GET" class="d-flex me-2">
-                    <input type="text" name="search" class="form-control me-2" placeholder="Cari Customer / Bulan" value="{{ request('search') }}">
+                <form action="{{ route('penjualan.indexBarangKeluar') }}" method="GET" class="d-flex me-2">
+                    <input type="text" name="search" class="form-control me-2" placeholder="Kegiatan / User" value="{{ request('search') }}">
                     <button type="submit" class="btn btn-primary">Cari</button>
                 </form>
             </div>

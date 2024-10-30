@@ -59,7 +59,8 @@ class PenjualanController extends Controller
             ->orWhereHas('user', function ($q) use ($search) {
                 $q->where('name', 'like', "%$search%");
             })
-            ->orWhere('tanggal_penjualan', 'like', "%$search%");
+            ->orWhere('tanggal_penjualan', 'like', "%$search%")
+            ->orWhere('kegiatan', 'like', "%$search%");
         }
 
         // Dapatkan hasil query

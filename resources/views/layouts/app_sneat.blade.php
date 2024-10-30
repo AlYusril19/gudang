@@ -181,14 +181,14 @@
                 <div data-i18n="Layouts">Transaksi</div>
               </a>
               <ul class="menu-sub">
-                <li class="menu-item {{ \Route::is('pembelian.index') ? 'active' : '' }}">
+                <li class="menu-item {{ \Route::is('pembelian.index') || \Route::is('pembelian.create') || \Route::is('pembelian.edit') ? 'active' : '' }}">
                   <a href="{{ route('pembelian.index') }}" class="menu-link">
                     <div data-i18n="Without menu">Pembelian</div>
                   </a>
                 </li>
               </ul>
               <ul class="menu-sub">
-                <li class="menu-item {{ \Route::is('penjualan.index') ? 'active' : '' }}">
+                <li class="menu-item {{ \Route::is('penjualan.index') || \Route::is('penjualan.create') ? 'active' : '' }}">
                   <a href="{{ route('penjualan.index') }}" class="menu-link">
                     <div data-i18n="Without menu">Penjualan</div>
                   </a>
