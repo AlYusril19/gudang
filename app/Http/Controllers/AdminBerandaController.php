@@ -25,6 +25,7 @@ class AdminBerandaController extends Controller
         // stok menipis
         $stokMinim = Barang::where('status', 'aktif')
                         ->whereRaw('stok <= stok_minimal')
+                        ->where('nama_barang', 'not like', '%second%')
                         ->count();
 
         // get pembelian sekarang
