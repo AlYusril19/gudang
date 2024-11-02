@@ -40,6 +40,10 @@
                 <input type="number" name="harga_beli" id="harga_beli" class="form-control" placeholder="150000" min="1">
             </div>
 
+            <div class="form-group mt-2">
+                <label for="tanggal_pembelian">Tanggal Pembelian</label>
+                <input type="date" name="tanggal_pembelian" id="tanggal_pembelian" class="form-control">
+            </div>
 
             <!-- Button to Add Barang -->
             <button type="button" id="btn-tambah-barang" class="btn btn-primary mt-2">Tambah Barang</button>

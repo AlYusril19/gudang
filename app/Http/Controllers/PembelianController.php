@@ -83,6 +83,7 @@ class PembelianController extends Controller
             'jumlah.*' => 'integer|min:1',
             'harga_beli' => 'required|array',
             'harga_beli.*' => 'integer',
+            'tanggal_pembelian' => 'required'
         ]);
 
         try {
@@ -92,7 +93,7 @@ class PembelianController extends Controller
             $pembelian = Pembelian::create([
                 'user_id' => auth()->user()->id,
                 'supplier_id' => $request->supplier_id,
-                'tanggal_pembelian' => now(),
+                'tanggal_pembelian' => $request->tanggal_pembelian,
             ]);
             $totalHarga = 0;
 
@@ -166,6 +167,7 @@ class PembelianController extends Controller
             'jumlah.*' => 'integer|min:1',
             'harga_beli' => 'required|array',
             'harga_beli.*' => 'integer',
+            'tanggal_pembelian' => 'required'
         ]);
 
         try {
@@ -175,7 +177,7 @@ class PembelianController extends Controller
             $pembelian = Pembelian::findOrFail($id);
             $pembelian->update([
                 'supplier_id' => $request->supplier_id,
-                'tanggal_pembelian' => now(),
+                'tanggal_pembelian' => $request->tanggal_pembelian,
             ]);
 
             $totalHarga = 0;
