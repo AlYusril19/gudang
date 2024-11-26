@@ -89,11 +89,11 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        $users = User::get();
-        $user = User::findOrFail($id);
+        $users = auth()->user();
         if ($users->role != 'superadmin') {
             return redirect()->back()->with('error', 'Hanya superadmin yang dapat menghapus data ini');
         }
+        $user = User::findOrFail($id);
         $user->delete();
 
         return redirect()->route('users.index')->with('success', 'User berhasil dihapus');

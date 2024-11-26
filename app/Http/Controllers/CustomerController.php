@@ -86,7 +86,7 @@ class CustomerController extends Controller
      */
     public function destroy(string $id)
     {
-        $user = User::get();
+        $user = auth()->user();
         $customers = Customer::findOrFail($id);
         if ($user->role != 'superadmin') {
             return redirect()->back()->with('error', 'Hanya superadmin yang dapat menghapus data ini');
