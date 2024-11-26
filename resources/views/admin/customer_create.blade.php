@@ -23,6 +23,17 @@
                                 <input type="text" class="form-control" id="hp" name="hp" placeholder="085712345678" required>
                             </div>
                         </div>
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label" for="mitra_id">User Mitra</label>
+                            <div class="col-sm-10">
+                                <select name="mitra_id" id="mitra_id" class="form-control">
+                                    <option value="">Pilih User</option>
+                                    @foreach($users as $cust)
+                                        <option value="{{ $cust['id'] }}">{{ $cust['name'] }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
                         <div class="mt-4">
                             <button type="submit" class="btn btn-primary me-2">Simpan</button>
                             <button type="reset" class="btn btn-outline-secondary">Batal</button>

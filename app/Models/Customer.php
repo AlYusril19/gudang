@@ -13,5 +13,11 @@ class Customer extends Model
     protected $fillable = [
         'nama',
         'hp',
+        'mitra_id'
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

@@ -34,7 +34,7 @@
                         <div class="card-body">
                             <div class="card-title d-flex align-items-start justify-content-between">
                                 <div class="avatar flex-shrink-0">
-                                    <img src="{{ asset('sneat') }}/assets/img/icons/unicons/paypal.png" alt="Credit Card" class="rounded" />
+                                    <img src="{{ asset('sneat') }}/assets/img/icons/unicons/sell.png" alt="Credit Card" class="rounded" />
                                 </div>
                                 <div class="dropdown">
                                     <button class="btn p-0" type="button" id="cardOpt1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -62,7 +62,7 @@
                         <div class="card-body">
                             <div class="card-title d-flex align-items-start justify-content-between">
                                 <div class="avatar flex-shrink-0">
-                                    <img src="{{ asset('sneat') }}/assets/img/icons/unicons/cc-primary.png" alt="Credit Card" class="rounded" />
+                                    <img src="{{ asset('sneat') }}/assets/img/icons/unicons/buy.png" alt="Credit Card" class="rounded" />
                                 </div>
                                 <div class="dropdown">
                                     <button class="btn p-0" type="button" id="cardOpt1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -90,7 +90,7 @@
                         <div class="card-body">
                             <div class="card-title d-flex align-items-start justify-content-between">
                                 <div class="avatar flex-shrink-0">
-                                    <img src="{{ asset('sneat') }}/assets/img/icons/unicons/cc-primary.png" alt="Credit Card" class="rounded" />
+                                    <img src="{{ asset('sneat') }}/assets/img/icons/unicons/repair.png" alt="Credit Card" class="rounded" />
                                 </div>
                                 <div class="dropdown">
                                     <button class="btn p-0" type="button" id="cardOpt1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -100,7 +100,6 @@
                                         <form action="{{ route('pembelian.index') }}" method="GET" class="d-flex me-2">
                                             <button type="submit" class="dropdown-item" name="search" value="perbaikan">View More</button>
                                         </form>
-                                        {{-- <a class="dropdown-item" href="{{ route('pembelian.index') }}">View More</a> --}}
                                     </div>
                                 </div>
                             </div>
@@ -111,6 +110,30 @@
                             @else
                                 <small class="text-danger fw-semibold"><i class="bx bx-down-arrow-alt"></i> {{ $bandingPerbaikan }}%</small>
                             @endif
+                        </div>
+                    </div>
+                </div>
+                {{-- Asset Barang --}}
+                <div class="col-lg-4 col-md-12 col-6 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-title d-flex align-items-start justify-content-between">
+                                <div class="avatar flex-shrink-0">
+                                    <img src="{{ asset('sneat') }}/assets/img/icons/unicons/asset.png" alt="Credit Card" class="rounded" />
+                                </div>
+                                <div class="dropdown">
+                                    <button class="btn p-0" type="button" id="cardOpt1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="bx bx-dots-vertical-rounded"></i>
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="cardOpt1">
+                                        <form action="{{ route('barang.index') }}" method="GET" class="d-flex me-2">
+                                            <button type="submit" class="dropdown-item" name="search" value="perbaikan">View More</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="fw-semibold d-block mb-1">Total Asset</span>
+                            <h5 class="card-title mb-2">{{ formatRupiah($totalAsset) }}</h4>
                         </div>
                     </div>
                 </div>

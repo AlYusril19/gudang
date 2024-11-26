@@ -64,11 +64,21 @@ class AdminBerandaController extends Controller
                                 ->whereYear('tanggal_penjualan', $tahunKemarin)
                                 ->where('kegiatan', 'perbaikan')
                                 ->sum('total_harga');
+        // get asset barang
+        $barangs = Barang::where('status', 'aktif')->get();
+
+        // Menghitung total harga_beli * stok
+        $totalAsset = $barangs->sum(function ($barang) {
+            return $barang->harga_beli * $barang->stok; // Mengalikan harga_beli dengan stok
+        });
+        // dd($totalHargaBeli);
+
         // banding pembelian sekarang dan kemarin
         $bandingPenjualan = 0;
         if ($pembelianKemarin) {
             $bandingPenjualan = round(($penjualanSekarang-$penjualanKemarin)/$penjualanKemarin*100, 2);
         }
+        // banding perbaikan sekarang dan kemarin
         $bandingPerbaikan = 0;
         if ($perbaikanKemarin) {
             $bandingPerbaikan = round(($perbaikanSekarang-$perbaikanKemarin)/$perbaikanKemarin*100, 2);
@@ -80,7 +90,8 @@ class AdminBerandaController extends Controller
             'bandingPenjualan' => $bandingPenjualan,
             'bandingPerbaikan' => $bandingPerbaikan,
             'perbaikanSekarang' => $perbaikanSekarang,
-            'stokMinim' => $stokMinim
+            'stokMinim' => $stokMinim,
+            'totalAsset' => $totalAsset
         ]);
     }
 

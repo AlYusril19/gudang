@@ -27,6 +27,7 @@ class UserController extends Controller
             'admin',
             'operator',
             'staff',
+            'mitra'
         ];
         return view('admin.user-create', compact('allowedRoleUser')); // Buat view untuk form tambah user
     }
@@ -40,6 +41,7 @@ class UserController extends Controller
             'admin',
             'operator',
             'staff',
+            'mitra'
         ];
         $request->validate([
             'name' => 'required|string|max:255',

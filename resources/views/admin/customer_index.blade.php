@@ -33,7 +33,7 @@
                                     </button>
                                     <div class="dropdown-menu">
                                         {{-- <a class="dropdown-item" href="{{ route('users.show', $user->id) }}"><i class="bx bx-show-alt me-2"></i> Show</a> --}}
-                                        {{-- <a class="dropdown-item" href="{{ route('users.edit', $user->id) }}"><i class="bx bx-edit-alt me-2"></i> Edit</a> --}}
+                                        <a class="dropdown-item" href="{{ route('customer.edit', $customer->id) }}"><i class="bx bx-edit-alt me-2"></i> Edit</a>
                                         <form action="{{ route('customer.destroy', $customer->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus customer ini?');">
                                             @csrf
                                             @method('DELETE')
