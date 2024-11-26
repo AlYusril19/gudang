@@ -22,7 +22,7 @@ class PenjualanController extends Controller
         // Query untuk mengambil data penjualan
         $query = Penjualan::with('customer', 'user' , 'penjualanBarang.barang')
                     ->orderBy('tanggal_penjualan', 'DESC')
-                    ->whereNull('kegiatan');
+                    ->whereNotNull('customer_id');
 
         // Jika ada input pencarian
         if ($search) {
@@ -49,7 +49,8 @@ class PenjualanController extends Controller
         // Query untuk mengambil data penjualan
         $query = Penjualan::with('customer', 'user' , 'penjualanBarang.barang')
                     ->orderBy('tanggal_penjualan', 'DESC')
-                    ->where('kegiatan', '!=', 'null');
+                    ->where('kegiatan', '!=', 'null')
+                    ->WhereNull('customer_id');
 
         // Jika ada input pencarian
         if ($search) {
