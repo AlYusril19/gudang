@@ -127,7 +127,7 @@
                                     </button>
                                     <div class="dropdown-menu" aria-labelledby="cardOpt1">
                                         <form action="{{ route('barang.index') }}" method="GET" class="d-flex me-2">
-                                            <button type="submit" class="dropdown-item" name="search" value="perbaikan">View More</button>
+                                            <button type="submit" class="dropdown-item" name="status" value="aktif">View More</button>
                                         </form>
                                     </div>
                                 </div>
