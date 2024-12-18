@@ -13,77 +13,87 @@ class AdminBerandaController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // get tanggal sekarang dan kemarin
+        // get tanggal sekarang
         $now = Carbon::now();
-        $bulanSekarang = $now->month;
-        $tahunSekarang = $now->year;
-        $bulanKemarin = $now->subMonth()->month;
-        $tahunKemarin = $now->subMonth()->year;
 
-        // stok menipis
+        // Jika ada filter bulan dan tahun dari request, gunakan itu
+        $bulanDipilih = $request->input('bulan', $now->month); // Default bulan sekarang
+        $tahunDipilih = $request->input('tahun', $now->year); // Default tahun sekarang
+
+        // Bulan sebelumnya untuk perbandingan
+        $bulanSebelumnya = Carbon::createFromDate($tahunDipilih, $bulanDipilih)->subMonth()->month;
+        $tahunSebelumnya = Carbon::createFromDate($tahunDipilih, $bulanDipilih)->subMonth()->year;
+
+        // Stok menipis
         $stokMinim = Barang::where('status', 'aktif')
-                        ->whereRaw('stok <= stok_minimal')
-                        ->where('nama_barang', 'not like', '%second%')
-                        ->count();
+            ->whereRaw('stok <= stok_minimal')
+            ->where('nama_barang', 'not like', '%second%')
+            ->count();
 
-        // get pembelian sekarang
-        $pembelianSekarang = Pembelian::whereMonth('tanggal_pembelian', $bulanSekarang)
-                                ->whereYear('tanggal_pembelian', $tahunSekarang)
-                                ->whereNull('kegiatan')
-                                ->sum('total_harga');
-        // get pembelian kemarin
-        $pembelianKemarin = Pembelian::whereMonth('tanggal_pembelian', $bulanKemarin)
-                                ->whereYear('tanggal_pembelian', $tahunKemarin)
-                                ->whereNull('kegiatan')
-                                ->sum('total_harga');
-        // banding pembelian sekarang dan kemarin
+        // Get pembelian sekarang
+        $pembelianSekarang = Pembelian::whereMonth('tanggal_pembelian', $bulanDipilih)
+            ->whereYear('tanggal_pembelian', $tahunDipilih)
+            ->whereNull('kegiatan')
+            ->sum('total_harga');
+
+        // Get pembelian sebelumnya
+        $pembelianSebelumnya = Pembelian::whereMonth('tanggal_pembelian', $bulanSebelumnya)
+            ->whereYear('tanggal_pembelian', $tahunSebelumnya)
+            ->whereNull('kegiatan')
+            ->sum('total_harga');
+
+        // Banding pembelian sekarang dan sebelumnya
         $bandingPembelian = 0;
-        if ($pembelianKemarin) {
-            $bandingPembelian = round(($pembelianSekarang-$pembelianKemarin)/$pembelianKemarin*100, 2);
+        if ($pembelianSebelumnya) {
+            $bandingPembelian = round(($pembelianSekarang - $pembelianSebelumnya) / $pembelianSebelumnya * 100, 2);
         }
 
-        // get penjualan sekarang
-        $penjualanSekarang = Penjualan::whereMonth('tanggal_penjualan', $bulanSekarang)
-                                ->whereYear('tanggal_penjualan', $tahunSekarang)
-                                ->where('customer_id', '!=', null)
-                                ->sum('total_harga');
-        // get penjualan kemarin
-        $penjualanKemarin = Penjualan::whereMonth('tanggal_penjualan', $bulanKemarin)
-                                ->whereYear('tanggal_penjualan', $tahunKemarin)
-                                ->where('customer_id', '!=', null)
-                                ->sum('total_harga');
+        // Get penjualan sekarang
+        $penjualanSekarang = Penjualan::whereMonth('tanggal_penjualan', $bulanDipilih)
+            ->whereYear('tanggal_penjualan', $tahunDipilih)
+            ->where('customer_id', '!=', null)
+            ->sum('total_harga');
 
-        $perbaikanSekarang = Penjualan::whereMonth('tanggal_penjualan', $bulanSekarang)
-                                ->whereYear('tanggal_penjualan', $tahunSekarang)
-                                ->where('kegiatan', 'perbaikan')
-                                ->sum('total_harga');
-        // get pembelian kemarin
-        $perbaikanKemarin = Penjualan::whereMonth('tanggal_penjualan', $bulanKemarin)
-                                ->whereYear('tanggal_penjualan', $tahunKemarin)
-                                ->where('kegiatan', 'perbaikan')
-                                ->sum('total_harga');
-        // get asset barang
+        // Get penjualan sebelumnya
+        $penjualanSebelumnya = Penjualan::whereMonth('tanggal_penjualan', $bulanSebelumnya)
+            ->whereYear('tanggal_penjualan', $tahunSebelumnya)
+            ->where('customer_id', '!=', null)
+            ->sum('total_harga');
+
+        // Get perbaikan sekarang
+        $perbaikanSekarang = Penjualan::whereMonth('tanggal_penjualan', $bulanDipilih)
+            ->whereYear('tanggal_penjualan', $tahunDipilih)
+            ->where('kegiatan', 'perbaikan')
+            ->sum('total_harga');
+
+        // Get perbaikan sebelumnya
+        $perbaikanSebelumnya = Penjualan::whereMonth('tanggal_penjualan', $bulanSebelumnya)
+            ->whereYear('tanggal_penjualan', $tahunSebelumnya)
+            ->where('kegiatan', 'perbaikan')
+            ->sum('total_harga');
+
+        // Get asset barang
         $barangs = Barang::where('status', 'aktif')->get();
 
         // Menghitung total harga_beli * stok
         $totalAsset = $barangs->sum(function ($barang) {
-            return $barang->harga_beli * $barang->stok; // Mengalikan harga_beli dengan stok
+            return $barang->harga_beli * $barang->stok;
         });
-        // dd($totalHargaBeli);
 
-        // banding pembelian sekarang dan kemarin
+        // Banding penjualan sekarang dan sebelumnya
         $bandingPenjualan = 0;
-        if ($pembelianKemarin && $penjualanKemarin != 0) {
-            $bandingPenjualan = round((($penjualanSekarang - $penjualanKemarin) / $penjualanKemarin) * 100, 2);
+        if ($penjualanSebelumnya) {
+            $bandingPenjualan = round((($penjualanSekarang - $penjualanSebelumnya) / $penjualanSebelumnya) * 100, 2);
         }
 
-        // banding perbaikan sekarang dan kemarin
+        // Banding perbaikan sekarang dan sebelumnya
         $bandingPerbaikan = 0;
-        if ($perbaikanKemarin) {
-            $bandingPerbaikan = round(($perbaikanSekarang-$perbaikanKemarin)/$perbaikanKemarin*100, 2);
+        if ($perbaikanSebelumnya) {
+            $bandingPerbaikan = round(($perbaikanSekarang - $perbaikanSebelumnya) / $perbaikanSebelumnya * 100, 2);
         }
+
         return view('admin.beranda', [
             'pembelianSekarang' => $pembelianSekarang,
             'bandingPembelian' => $bandingPembelian,
@@ -92,9 +102,12 @@ class AdminBerandaController extends Controller
             'bandingPerbaikan' => $bandingPerbaikan,
             'perbaikanSekarang' => $perbaikanSekarang,
             'stokMinim' => $stokMinim,
-            'totalAsset' => $totalAsset
+            'totalAsset' => $totalAsset,
+            'bulanDipilih' => $bulanDipilih,
+            'tahunDipilih' => $tahunDipilih
         ]);
     }
+
 
     /**
      * Show the form for creating a new resource.

@@ -7,14 +7,45 @@
                 <div class="d-flex align-items-start row">
                     <div class="col-sm-7">
                         <div class="card-body">
-                            {{-- {{ __('You are logged in!') }} --}}
-                            <h5 class="card-title text-primary mb-3">Welcome {{ auth()->user()->role }} {{ auth()->user()->name }} 🎉</h5>
-                            <p class="mb-6">You have {{ $stokMinim }} item data with low stock.<br>Check in bottom.</p>
-                            
+                            <h5 class="card-title text-primary mb-3">
+                                Welcome {{ auth()->user()->role }} {{ auth()->user()->name }} 🎉
+                            </h5>
+                            <p class="mb-6">
+                                You have {{ $stokMinim }} item data with low stock.<br>Check in bottom.
+                            </p>
                             @if ($stokMinim)
                                 <a href="{{ route('barang.index') }}" class="btn btn-sm btn-outline-primary">Cek Item</a>
                             @endif
+
+                            <h6 class="mt-5 mb-1">Cek data pada bulan yang dipilih</h6>
+                            <!-- Dropdown Pemilihan Bulan dan Tahun -->
+                            <form action="{{ route('dashboard.index') }}" method="GET">
+                                <div class="row g-2">
+                                    <div class="col-md-6">
+                                        <label for="bulan" class="form-label">Pilih Bulan</label>
+                                        <select name="bulan" id="bulan" class="form-select">
+                                            @for ($i = 1; $i <= 12; $i++)
+                                                <option value="{{ $i }}" {{ request('bulan', date('n')) == $i ? 'selected' : '' }}>
+                                                    {{ DateTime::createFromFormat('!m', $i)->format('F') }}
+                                                </option>
+                                            @endfor
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="tahun" class="form-label">Pilih Tahun</label>
+                                        <select name="tahun" id="tahun" class="form-select">
+                                            @for ($y = date('Y') - 5; $y <= date('Y'); $y++)
+                                                <option value="{{ $y }}" {{ request('tahun', date('Y')) == $y ? 'selected' : '' }}>
+                                                    {{ $y }}
+                                                </option>
+                                            @endfor
+                                        </select>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary mt-3">Terapkan</button>
+                            </form>
                         </div>
+                        
                     </div>
                     <div class="col-sm-5 text-center text-sm-left">
                         <div class="card-body pb-0 px-0 px-md-6">
