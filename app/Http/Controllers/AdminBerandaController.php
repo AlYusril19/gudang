@@ -75,9 +75,10 @@ class AdminBerandaController extends Controller
 
         // banding pembelian sekarang dan kemarin
         $bandingPenjualan = 0;
-        if ($pembelianKemarin) {
-            $bandingPenjualan = round(($penjualanSekarang-$penjualanKemarin)/$penjualanKemarin*100, 2);
+        if ($pembelianKemarin && $penjualanKemarin != 0) {
+            $bandingPenjualan = round((($penjualanSekarang - $penjualanKemarin) / $penjualanKemarin) * 100, 2);
         }
+
         // banding perbaikan sekarang dan kemarin
         $bandingPerbaikan = 0;
         if ($perbaikanKemarin) {

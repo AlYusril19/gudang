@@ -247,18 +247,19 @@ class BarangController extends Controller
     {
         $orderBy = $request->get('order_by', 'nama_barang');  // Default sorting by nama_barang
         $direction = $request->get('direction', 'asc');       // Default direction is ascending
-        $search = 'second';  // Ambil parameter pencarian
+        $searchWords = ['second', 'modif'];  // Kata-kata pencarian
 
         // Query dengan pencarian dan pengurutan
-        $barangs = Barang::when($search, function ($query, $search) {
-                return $query->where('nama_barang', 'like', "%{$search}%");
-            })
-            ->whereRaw('status != "arsip"')
-            ->orderBy($orderBy, $direction)
-            ->get();
+        $barangs = Barang::where(function ($query) use ($searchWords) {
+                    foreach ($searchWords as $word) {
+                        $query->orWhere('nama_barang', 'like', "%{$word}%");
+                    }
+                })
+                ->where('status', '!=', 'arsip')  // Status tidak sama dengan arsip
+                ->orderBy($orderBy, $direction)
+                ->get();
 
         // Kembalikan sebagai JSON response
         return response()->json($barangs);
     }
-
 }
