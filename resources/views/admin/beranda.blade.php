@@ -14,7 +14,10 @@
                                 You have {{ $stokMinim }} item data with low stock.<br>Check in bottom.
                             </p>
                             @if ($stokMinim)
-                                <a href="{{ route('barang.index') }}" class="btn btn-sm btn-outline-primary">Cek Item</a>
+                            <form action="{{ route('barang.index') }}" method="GET" class="d-flex me-2">
+                                <button type="submit" name="stok_minimal" value="stok_minimal" class="btn btn-sm btn-outline-primary">Cek Item</button>
+                            </form>
+                                {{-- <a href="{{ route('barang.index') }}" class="btn btn-sm btn-outline-primary">Cek Item</a> --}}
                             @endif
 
                             <h6 class="mt-5 mb-1">Cek data pada bulan yang dipilih</h6>
