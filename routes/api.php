@@ -30,15 +30,20 @@ Route::post('/login', [LoginController::class, 'apiLogin']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/get-barang', [BarangController::class, 'getBarangs']);
+    Route::get('/get-barang-kembali', [BarangController::class, 'getBarangsKembali']);
     Route::get('/get-customer', [CustomerController::class, 'getCustomers']);
     Route::get('/get-user/{id}', [UserController::class, 'apiUser']);
     Route::put('/user/update', [UserController::class, 'apiUpdate']);
     Route::post('/penjualan', [PenjualanController::class, 'storeApi']);
     Route::post('/penjualan-destroy', [PenjualanController::class, 'destroyApi']);
+    Route::get('/get-penjualan/{id}', [PenjualanController::class, 'getPenjualanApi']);
     Route::post('/pembelian', [PembelianController::class, 'storeApi']);
     Route::post('/pembelian-destroy', [PembelianController::class, 'destroyApi']);
+    Route::get('/get-pembelian/{id}', [PembelianController::class, 'getPembelianApi']);
 });
-    Route::get('/get-barang-kembali', [BarangController::class, 'getBarangsKembali']);
+    // Route::get('/get-barang-kembali', [BarangController::class, 'getBarangsKembali']);
+    // Route::get('/get-penjualan/{id}', [PenjualanController::class, 'getPenjualanApi']);
+    // Route::get('/get-pembelian/{id}', [PembelianController::class, 'getPembelianApi']);
 
 // Route::get('/get-user/{id}', [UserController::class, 'apiUser']);
 // Route::get('/get-barang', [BarangController::class, 'getBarangs']);

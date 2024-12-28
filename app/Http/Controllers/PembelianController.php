@@ -406,4 +406,12 @@ class PembelianController extends Controller
             ], 500); // 500 Internal Server Error
         }
     }
+
+    public function getPembelianApi(string $id) {
+        // Temukan data penjualan berdasarkan created_at dan user_id
+        $pembelian = Pembelian::with('pembelianBarang.barang')
+                            ->where('laporan_id', $id)
+                            ->first();
+        return response()->json($pembelian);
+    }
 }
