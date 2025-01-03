@@ -20,12 +20,18 @@ class BarangController extends Controller
         $search = $request->get('search');
         $status = $request->get('status'); // Tambahkan parameter untuk status
         $stokMinimal = $request->has('stok_minimal');
+        $kategori = $request->get('kategori'); // Tambahkan parameter untuk status
+
+        $kategoris = Kategori::all();
 
         $barangs = Barang::when($search, function ($query, $search) {
             return $query->where('nama_barang', 'like', "%{$search}%");
         })
         ->when($status, function ($query, $status) {
             return $query->where('status', $status);
+        })
+        ->when($kategori, function ($query, $kategori) {
+            return $query->where('kategori_id', $kategori);
         })
         ->when($stokMinimal, function ($query) {
             return $query->whereColumn('stok', '<=', 'stok_minimal')
@@ -37,7 +43,7 @@ class BarangController extends Controller
         ->orderBy($orderBy, $direction)
         ->get();
 
-        return view('barang.index_barang', compact('barangs', 'orderBy', 'direction', 'search'));
+        return view('barang.index_barang', compact('barangs', 'orderBy', 'direction', 'search', 'kategoris'));
     }
 
     /**
@@ -233,7 +239,7 @@ class BarangController extends Controller
         $search = $request->get('search');  // Ambil parameter pencarian
 
         // Query dengan pencarian dan pengurutan
-        $barangs = Barang::when($search, function ($query, $search) {
+        $barangs = Barang::with('kategori')->when($search, function ($query, $search) {
                 return $query->where('nama_barang', 'like', "%{$search}%");
             })
             ->whereRaw('status != "arsip"')

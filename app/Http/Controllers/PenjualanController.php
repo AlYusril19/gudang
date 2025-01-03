@@ -383,7 +383,7 @@ class PenjualanController extends Controller
 
     public function getPenjualanApi(string $id) {
         // Temukan data penjualan berdasarkan created_at dan user_id
-        $penjualan = Penjualan::with('penjualanBarang.barang')
+        $penjualan = Penjualan::with('penjualanBarang.barang.kategori')
                             ->where('laporan_id', $id)
                             ->first();
         return response()->json($penjualan);

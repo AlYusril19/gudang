@@ -31,6 +31,7 @@ class KategoriController extends Controller
     {
         $request->validate([
             'nama_kategori' => 'required|string|max:64|unique:kategori',
+            'satuan' => 'nullable|string|max:32',
         ]);
 
         Kategori::create($request->all());
@@ -51,7 +52,8 @@ class KategoriController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $kategori = Kategori::findOrFail($id);
+        return view('barang.edit_kategori_barang', compact('kategori'));
     }
 
     /**
@@ -59,8 +61,18 @@ class KategoriController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
-    }
+        $request->validate([
+            'nama_kategori' => 'required|string|max:64|unique:kategori,nama_kategori,' . $id,
+            'satuan' => 'nullable|string|max:32',
+        ]);
+        $kategori = Kategori::findOrFail($id);
+
+        try {
+            $kategori->update($request->all());
+            return redirect()->route('kategori.index')->with('success', 'Kategori berhasil diedit');
+        } catch (\Exception $e) {
+            return redirect()->route('kategori.index')->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }    }
 
     /**
      * Remove the specified resource from storage.

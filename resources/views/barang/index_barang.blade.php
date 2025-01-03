@@ -13,7 +13,14 @@
                         <input type="hidden" name="stok_minimal" value="stok_minimal">
                     @endif
                     <input type="text" name="search" class="form-control" placeholder="Cari Barang" value="{{ request('search') }}">
-                    <button type="submit" class="btn btn-primary">Cari</button>
+                    <button type="submit" class="btn btn-primary me-2">Cari</button>
+
+                    <select name="kategori" class="form-select" onchange="this.form.submit()">
+                        <option value="">Pilih Kategori</option>
+                        @foreach ($kategoris as $data)
+                            <option value="{{ $data['id'] }}" {{ request('kategori') == $data['id'] ? 'selected' : '' }}>{{ $data['nama_kategori'] }}</option>
+                        @endforeach
+                    </select>
                 </form>
             </div>
         </div>
@@ -23,8 +30,8 @@
                     Data Item
                 </caption>
                 <thead>
-                    <tr>
-                        <th>No</th>
+                    <tr align="center">
+                        <th width="5%">No</th>
                         <th>
                             <a href="{{ route('barang.index', ['order_by' => 'nama_barang', 'direction' => $orderBy === 'nama_barang' && $direction === 'asc' ? 'desc' : 'asc']) }}">
                                 Nama Barang
@@ -57,7 +64,7 @@
                 <tbody class="table-border-bottom-0">
                     @foreach($barangs as $barang)
                         <tr id="barang-{{ $barang->id }}">
-                            <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>{{ $loop->iteration }}</strong></td>
+                            <td align="center"><i class="fab fa-angular fa-lg text-danger"></i> <strong>{{ $loop->iteration }}</strong></td>
                             <td>
                                 <ul class="list-unstyled m-0 avatar-group d-flex align-items-center">
                                     @foreach ($barang->galeri as $foto)
@@ -68,19 +75,19 @@
                                 </ul>
                                 {{ $barang->nama_barang }}
                             </td>
-                            <td>{{ formatRupiah($barang->harga_beli) }}</td>
-                            <td>{{ formatRupiah($barang->harga_jual) }}</td>
+                            <td align="right">{{ formatRupiah($barang->harga_beli) }}</td>
+                            <td align="right">{{ formatRupiah($barang->harga_jual) }}</td>
                             {{-- <td>{{ $barang->stok }}</td> --}}
-                            <td>
+                            <td align="center">
                                 @if ($barang->is_stok_minim && $barang->is_aktif && $barang->isnot_second)
-                                    <span class="text-truncate d-flex align-items-center text-heading">
+                                    <span class="text-truncate d-flex text-heading">
                                         <span class="w-px-20 h-px-20 rounded-circle d-flex justify-content-center align-items-center bg-label-danger me-2 p-2">
                                             <i class="bx bx-cart"></i>
                                         </span>
-                                        {{ $barang->stok }}
+                                        {{ $barang->stok }} {{ $barang->kategori->satuan ?? ''}}
                                     </span>
                                 @else
-                                    {{ $barang->stok }}
+                                    {{ $barang->stok }} {{ $barang->kategori->satuan ?? ''}}
                                 @endif
                             </td>
                             <td>

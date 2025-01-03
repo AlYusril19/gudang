@@ -13,17 +13,19 @@
                     Data Kategori
                 </caption>
                 <thead>
-                    <tr>
-                        <th>No</th>
+                    <tr align="center">
+                        <th width="5%">No</th>
                         <th>Kategori</th>
+                        <th>satuan</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="table-border-bottom-0">
                     @foreach($kategoris as $kategori)
-                        <tr>
-                            <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>{{ $loop->iteration }}</strong></td>
+                        <tr align="center">
+                            <td><i class="fab fa-angular fa-lg text-danger"></i> <strong>{{ $loop->iteration }}</strong></td>
                             <td>{{ $kategori->nama_kategori }}</td>
+                            <td>{{ $kategori->satuan ?? '-' }}</td>
                             <td>
                                 <div class="dropdown">
                                     <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
@@ -31,7 +33,7 @@
                                     </button>
                                     <div class="dropdown-menu">
                                         {{-- <a class="dropdown-item" href="{{ route('users.show', $user->id) }}"><i class="bx bx-show-alt me-2"></i> Show</a> --}}
-                                        {{-- <a class="dropdown-item" href="{{ route('users.edit', $user->id) }}"><i class="bx bx-edit-alt me-2"></i> Edit</a> --}}
+                                        <a class="dropdown-item" href="{{ route('kategori.edit', $kategori->id) }}"><i class="bx bx-edit-alt me-2"></i> Edit</a>
                                         <form action="{{ route('kategori.destroy', $kategori->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus Kategori ini?');">
                                             @csrf
                                             @method('DELETE')
