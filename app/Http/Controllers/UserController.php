@@ -102,7 +102,7 @@ class UserController extends Controller
     /*  */
     /* API CONTROLLER */
     /*  */
-    public function apiUpdate(Request $request)
+    public function apiUserUpdate(Request $request)
     {
         // Validasi input
         $request->validate([
@@ -129,5 +129,12 @@ class UserController extends Controller
 
     public function apiUser($id) {
         return response()->json(User::findOrFail($id));
+    }
+
+    public function apiTeknisi($id) {
+        $teknisi = User::where('role', 'staff')
+            ->where('id', '!=', $id)
+            ->get();
+        return response()->json($teknisi);
     }
 }
