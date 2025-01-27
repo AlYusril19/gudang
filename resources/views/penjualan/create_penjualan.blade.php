@@ -38,6 +38,12 @@
                 <input type="number" name="jumlah" id="jumlah" class="form-control" value="1" min="1">
             </div>
 
+            {{-- Tanggal Penjualan --}}
+            <div class="form-group mt-2">
+                <label for="tanggal_penjualan">Tanggal Penjualan</label>
+                <input type="date" name="tanggal_penjualan" id="tanggal_penjualan" class="form-control" value="{{ date('Y-m-d') }}">
+            </div>
+
             <!-- Button to Add Barang -->
             <button type="button" id="btn-tambah-barang" class="btn btn-primary mt-2">Tambah Barang</button>
 

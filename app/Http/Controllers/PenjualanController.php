@@ -92,6 +92,7 @@ class PenjualanController extends Controller
             'barang_ids.*' => 'exists:barang,id',
             'jumlah' => 'required|array',
             'jumlah.*' => 'integer|min:1',
+            'tanggal_penjualan' => 'required|date',
         ]);
 
         try {
@@ -103,7 +104,7 @@ class PenjualanController extends Controller
             $penjualan = Penjualan::create([
                 'user_id' => $userId,
                 'customer_id' => $request->customer_id,
-                'tanggal_penjualan' => now(),
+                'tanggal_penjualan' => $request->tanggal_penjualan,
             ]);
             $totalHarga = 0;
 
@@ -384,9 +385,21 @@ class PenjualanController extends Controller
     public function getPenjualanApi(string $id) {
         // Temukan data penjualan berdasarkan created_at dan user_id
         $penjualan = Penjualan::with('penjualanBarang.barang.kategori')
-                            ->where('laporan_id', $id)
-                            ->first();
+                            ->findOrFail($id);
         return response()->json($penjualan);
     }
 
+    public function getPenjualanMitraApi(Request $request, string $customerId) {
+        // Jika ada filter bulan dan tahun dari request, gunakan itu
+        $bulanDipilih = $request->input('bulan');
+        $tahunDipilih = $request->input('tahun');
+
+        $penjualan = Penjualan::with('penjualanBarang.barang.kategori')
+                            ->where('customer_id', $customerId)
+                            ->whereNull('kegiatan')
+                            ->whereYear('tanggal_penjualan', $tahunDipilih)
+                            ->WhereMonth('tanggal_penjualan', $bulanDipilih)
+                            ->get();
+        return response()->json($penjualan);
+    }
 }
