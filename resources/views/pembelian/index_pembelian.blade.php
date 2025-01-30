@@ -4,7 +4,7 @@
     @include('pembelian.navbar_index_pembelian')
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <a href="{{ route('pembelian.create') }}" class="btn btn-primary mb-0">Barang Masuk</a>
+            <a href="{{ route('pembelian.create') }}" class="btn btn-primary mb-0">Add Pembelian</a>
             <div class=" align-items-center">
                 <form action="{{ route('pembelian.index') }}" method="GET" class="d-flex me-2">
                     <input type="text" name="search" class="form-control me-2" placeholder="Cari Supplier / Kegiatan" value="{{ request('search') }}">

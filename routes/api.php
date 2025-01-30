@@ -38,6 +38,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/penjualan', [PenjualanController::class, 'storeApi']);
     Route::post('/penjualan-destroy', [PenjualanController::class, 'destroyApi']);
     Route::get('/get-penjualan/{id}', [PenjualanController::class, 'getPenjualanApi']);
+    Route::get('/get-penjualan-by-id/{id}', [PenjualanController::class, 'getPenjualanApiById']);
     Route::get('/get-penjualan-mitra/{id}', [PenjualanController::class, 'getPenjualanMitraApi']);
     Route::post('/pembelian', [PembelianController::class, 'storeApi']);
     Route::post('/pembelian-destroy', [PembelianController::class, 'destroyApi']);

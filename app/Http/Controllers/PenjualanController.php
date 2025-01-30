@@ -403,4 +403,11 @@ class PenjualanController extends Controller
                             ->get();
         return response()->json($penjualan);
     }
+
+    public function getPenjualanApiById(string $id) {
+        // Temukan data penjualan berdasarkan created_at dan user_id
+        $penjualan = Penjualan::with('penjualanBarang.barang.kategori')
+                            ->findOrFail($id);
+        return response()->json($penjualan);
+    }
 }
