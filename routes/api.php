@@ -44,7 +44,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/get-pembelian/{id}', [PembelianController::class, 'getPembelianApi']);
 });
     // Route::get('/get-barang-kembali', [BarangController::class, 'getBarangsKembali']);
-    Route::get('/get-penjualan/{id}', [PenjualanController::class, 'getPenjualanApi']);
+    // Route::get('/get-penjualan/{id}', [PenjualanController::class, 'getPenjualanApi']);
     // Route::get('/get-penjualan-mitra/{id}', [PenjualanController::class, 'getPenjualanMitraApi']);
     // Route::get('/get-pembelian/{id}', [PembelianController::class, 'getPembelianApi']);
 
