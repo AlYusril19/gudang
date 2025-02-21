@@ -75,8 +75,7 @@
                                         <i class="bx bx-dots-vertical-rounded"></i>
                                     </button>
                                     <div class="dropdown-menu dropdown-menu-end" aria-labelledby="cardOpt4">
-                                        <a class="dropdown-item" href="javascript:void(0);">View More</a>
-                                        <a class="dropdown-item" href="javascript:void(0);">Delete</a>
+                                        <a class="dropdown-item" href="{{ route('penjualan.index') }}">View More</a>
                                     </div>
                                 </div>
                             </div>
@@ -131,7 +130,7 @@
                                         <i class="bx bx-dots-vertical-rounded"></i>
                                     </button>
                                     <div class="dropdown-menu" aria-labelledby="cardOpt1">
-                                        <form action="{{ route('pembelian.index') }}" method="GET" class="d-flex me-2">
+                                        <form action="{{ route('penjualan.indexBarangKeluar') }}" method="GET" class="d-flex me-2">
                                             <button type="submit" class="dropdown-item" name="search" value="perbaikan">View More</button>
                                         </form>
                                     </div>

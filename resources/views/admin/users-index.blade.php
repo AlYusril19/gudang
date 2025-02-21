@@ -48,8 +48,8 @@
                     @endforeach
                 </tbody>
             </table>
-            {{ $users->links() }}
+            {{-- {{ $users->links() }} --}}
         </div>
     </div>
-    <hr class="my-12">
+    {{-- <hr class="my-12"> --}}
 @endsection

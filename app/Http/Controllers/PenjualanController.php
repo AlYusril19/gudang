@@ -17,6 +17,8 @@ class PenjualanController extends Controller
      */
     public function index(Request $request)
     {
+        $route = route('penjualan.index');
+        $titleSearch = 'Search Penjualan (cust)';
         $search = $request->input('search');
 
         // Query untuk mengambil data penjualan
@@ -39,11 +41,13 @@ class PenjualanController extends Controller
         $penjualan = $query->get();
 
         // Kirim hasil ke view
-        return view('penjualan.index_penjualan', compact('penjualan'));
+        return view('penjualan.index_penjualan', compact('penjualan', 'route', 'titleSearch'));
     }
 
     public function indexBarangKeluar(Request $request)
     {
+        $route = route('penjualan.indexBarangKeluar');
+        $titleSearch = 'Search Kegiatan';
         $search = $request->input('search');
 
         // Query untuk mengambil data penjualan
@@ -68,7 +72,7 @@ class PenjualanController extends Controller
         $penjualan = $query->get();
 
         // Kirim hasil ke view
-        return view('penjualan.index_barang_keluar', compact('penjualan'));
+        return view('penjualan.index_barang_keluar', compact('penjualan', 'route', 'titleSearch'));
     }
 
     /**
