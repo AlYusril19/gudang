@@ -9,6 +9,7 @@ use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\OperatorBerandaController;
 use App\Http\Controllers\PembelianController;
 use App\Http\Controllers\PenjualanController;
+use App\Http\Controllers\SettingController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -59,6 +60,7 @@ Route::group(['middleware' => ['auth', 'role:admin,superadmin']], function () {
     Route::resource('/admin/customer', CustomerController::class);
 
     Route::resource('/admin/supplier', SupplierController::class);
+    Route::resource('/admin/setting', SettingController::class);
 });
 
 Route::group(['middleware' => ['auth', 'role:staff']], function () {

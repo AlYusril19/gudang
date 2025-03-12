@@ -153,6 +153,13 @@
               </a>
             </li>
 
+            <li class="menu-item {{ \Route::is('setting.index') ? 'active' : '' }}">
+              <a href="{{ route('setting.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-home-circle"></i>
+                <div data-i18n="Analytics">Setting Bot</div>
+              </a>
+            </li>
+
             <!-- Layouts -->
             <li class="menu-item {{ \Route::is('barang.*') || \Route::is('kategori.*') ? 'active open' : '' }}">
               <a href="javascript:void(0);" class="menu-link menu-toggle">

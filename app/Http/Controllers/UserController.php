@@ -46,6 +46,8 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
+            'nohp' => 'required|string|max:13',
+            'id_telegram' => 'required|string|max:15',
             'password' => 'required|string|min:8|confirmed',
             'role' => ['required', Rule::in($allowedRoleUser)],
         ]);
@@ -107,6 +109,8 @@ class UserController extends Controller
         // Validasi input
         $request->validate([
             'name' => 'required|string|max:255',
+            'nohp' => 'required|string|max:13',
+            'id_telegram' => 'required|string|max:15',
             'password' => 'nullable|string|min:8|confirmed',
         ]);
 
@@ -115,6 +119,8 @@ class UserController extends Controller
 
         // Update nama
         $user->name = $request->name;
+        $user->nohp = $request->nohp;
+        $user->id_telegram = $request->id_telegram;
 
         // Jika password diisi, baru update password
         if ($request->filled('password')) {
@@ -136,5 +142,10 @@ class UserController extends Controller
             ->where('id', '!=', $id)
             ->get();
         return response()->json($teknisi);
+    }
+    public function apiUserAdmin() {
+        $users = User::where('role', 'admin')
+            ->orWhere('role', 'superadmin')->get();
+        return response()->json($users);
     }
 }
