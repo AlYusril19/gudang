@@ -146,7 +146,7 @@
 
           <ul class="menu-inner py-1">
             <!-- Dashboard -->
-            <li class="menu-item {{ \Route::is('admin.index') ? 'active' : '' }}">
+            <li class="menu-item {{ \Route::is('dashboard.index') ? 'active' : '' }}">
               <a href="{{ route('dashboard.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-home-circle"></i>
                 <div data-i18n="Analytics">Dashboard</div>
@@ -155,7 +155,7 @@
 
             <li class="menu-item {{ \Route::is('setting.index') ? 'active' : '' }}">
               <a href="{{ route('setting.index') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-home-circle"></i>
+                <i class="menu-icon tf-icons bx bx-bot"></i>
                 <div data-i18n="Analytics">Setting Bot</div>
               </a>
             </li>
