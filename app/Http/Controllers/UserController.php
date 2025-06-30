@@ -12,9 +12,21 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::paginate(10); // Menggunakan pagination untuk menampilkan 10 pengguna per halaman
+        $status = $request->get('status', 'aktif'); // default 'aktif'
+        $role = $request->get('role'); // bisa null
+        
+        $users = User::where('status', $status)
+            ->when($role, function ($query, $role) {
+                // Jika role disediakan di request, filter sesuai
+                $query->where('role', $role);
+            }, function ($query) {
+                // Jika tidak ada role, tampilkan semua role kecuali magang dan mitra
+                $query->whereNotIn('role', ['magang', 'mitra']);
+            })
+            ->orderBy('created_at')
+            ->get();
         return view('admin.users-index', compact('users'));
     }
 
@@ -27,7 +39,8 @@ class UserController extends Controller
             'admin',
             'operator',
             'staff',
-            'mitra'
+            'mitra',
+            'magang'
         ];
         return view('admin.user-create', compact('allowedRoleUser')); // Buat view untuk form tambah user
     }
@@ -41,7 +54,8 @@ class UserController extends Controller
             'admin',
             'operator',
             'staff',
-            'mitra'
+            'mitra',
+            'magang'
         ];
         $request->validate([
             'name' => 'required|string|max:255',
@@ -101,6 +115,22 @@ class UserController extends Controller
         return redirect()->route('users.index')->with('success', 'User berhasil dihapus');
     }
 
+    /**
+     * Function Status Arsip dan Aktif view index.
+     */
+    public function toggleStatus(Request $request)
+    {
+        try {
+            $user = User::findOrFail($request->id);
+            $user->status = $request->status;
+            $user->save();
+
+            return response()->json(['success' => true, 'message' => 'Status User berhasil diubah']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Terjadi kesalahan saat mengubah status barang.']);
+        }
+    }
+
     /*  */
     /* API CONTROLLER */
     /*  */
@@ -140,6 +170,7 @@ class UserController extends Controller
     public function apiTeknisi($id) {
         $teknisi = User::where('role', 'staff')
             ->where('id', '!=', $id)
+            ->where('status', 'aktif')
             ->get();
         return response()->json($teknisi);
     }

@@ -24,6 +24,7 @@ class User extends Authenticatable
         'id_telegram',
         'password',
         'role',
+        'status',
     ];
 
     /**

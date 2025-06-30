@@ -41,6 +41,7 @@ Route::group(['middleware' => ['auth', 'role:admin,superadmin']], function () {
     Route::resource('/admin/dashboard', AdminBerandaController::class);
 
     Route::resource('/admin/users', UserController::class);
+    Route::post('/admin/users/toggle-status', [UserController::class, 'toggleStatus'])->name('user.toggleStatus');
 
     Route::resource('/admin/barang', BarangController::class);
     Route::post('/admin/barang/toggle-status', [BarangController::class, 'toggleStatus'])->name('barang.toggleStatus');

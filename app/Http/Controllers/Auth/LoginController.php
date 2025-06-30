@@ -12,6 +12,7 @@ class LoginController extends Controller
     protected $redirectTo = '/';
     protected $redirectAdmin = '/admin/dashboard';
     protected $redirectOperator = '/operator/dashboard';
+    protected $notPermitted = '/layouts/app_sneat_error';
 
     public function showLoginForm()
     {
@@ -20,10 +21,9 @@ class LoginController extends Controller
         if ($userRole) {
             if ($userRole === 'admin' || $userRole === 'superadmin') {
                 return redirect()->intended($this->redirectAdmin);
-            }
-            if ($userRole == 'operator') {
+            }else if ($userRole == 'operator') {
                 return redirect()->intended($this->redirectOperator);
-            }
+            } 
         }
         return view('auth.login');
     }
@@ -48,7 +48,10 @@ class LoginController extends Controller
             }
 
             // Jika role tidak dikenali, redirect ke halaman default
-            return redirect($this->redirectTo);
+            // return redirect($this->redirectTo);
+            return back()->withErrors([
+                'email' => 'Permission Denied. This page is not accessible with your current user role. Please log in to the correct application.',
+            ]);
         }
 
         // Jika login gagal, kembalikan ke halaman login dengan pesan error

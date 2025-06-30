@@ -232,6 +232,14 @@
 
     <!-- Page JS -->
 
+    <script>
+      window.setTimeout(function() {
+        $(".invalid-feedback").fadeTo(500, 0).slideUp(500, function(){
+          $(this).remove(); 
+        });
+      }, 5500);
+    </script>
+
     <!-- Place this tag in your head or just before your close body tag. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
   </body>
