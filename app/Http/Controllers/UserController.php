@@ -174,6 +174,14 @@ class UserController extends Controller
             ->get();
         return response()->json($teknisi);
     }
+
+    public function apiHelper($id) {
+        $teknisi = User::where('role', 'magang')
+            ->where('id', '!=', $id)
+            ->where('status', 'aktif')
+            ->get();
+        return response()->json($teknisi);
+    }
     public function apiUserAdmin() {
         $users = User::where('role', 'admin')
             ->orWhere('role', 'superadmin')->get();

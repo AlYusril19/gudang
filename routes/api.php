@@ -37,6 +37,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/get-user/{id}', [UserController::class, 'apiUser']);
     Route::put('/user/update', [UserController::class, 'apiUserUpdate']);
     Route::get('/get-teknisi/{id}', [UserController::class, 'apiTeknisi']);
+    Route::get('/get-helper/{id}', [UserController::class, 'apiHelper']);
     Route::post('/penjualan', [PenjualanController::class, 'storeApi']);
     Route::post('/penjualan-destroy', [PenjualanController::class, 'destroyApi']);
     Route::get('/get-penjualan/{id}', [PenjualanController::class, 'getPenjualanApi']);
@@ -48,11 +49,4 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/send-photo', [SendMessageTelegram::class, 'sendPhotoApi']);
     Route::get('/get-pembelian/{id}', [PembelianController::class, 'getPembelianApi']);
 });
-    // Route::get('/get-user-admin', [UserController::class, 'apiUserAdmin']);
-    // Route::get('/get-barang-kembali', [BarangController::class, 'getBarangsKembali']);
-    // Route::get('/get-penjualan/{id}', [PenjualanController::class, 'getPenjualanApi']);
-    // Route::get('/get-penjualan-mitra/{id}', [PenjualanController::class, 'getPenjualanMitraApi']);
-    // Route::get('/get-pembelian/{id}', [PembelianController::class, 'getPembelianApi']);
-
-// Route::get('/get-teknisi/{id}', [UserController::class, 'apiTeknisi']);
-// Route::get('/get-barang', [BarangController::class, 'getBarangs']);
+    Route::get('/public-barang', [BarangController::class, 'getBarangsPublic']);
