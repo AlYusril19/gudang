@@ -39,6 +39,10 @@
                     <input type="text" class="form-control" id="stok" value="{{ $barang->stok }}" readonly>
                 </div>
                 <div class="form-group mb-3">
+                    <label for="terjual">Barang Terjual</label>
+                    <input type="text" class="form-control" id="terjual" value="{{ $barang->terjual }}" readonly>
+                </div>
+                <div class="form-group mb-3">
                     <label for="deskripsi">Deskripsi Barang</label>
                     <input type="text" class="form-control" id="deskripsi" value="{{ $barang->deskripsi }}" readonly>
                 </div>

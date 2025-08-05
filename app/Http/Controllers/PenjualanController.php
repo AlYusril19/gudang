@@ -103,7 +103,7 @@ class PenjualanController extends Controller
             DB::beginTransaction();
 
             $userId = auth()->user()->id;
-            // dd($userId);
+
             // Simpan data penjualan utama
             $penjualan = Penjualan::create([
                 'user_id' => $userId,
@@ -117,7 +117,6 @@ class PenjualanController extends Controller
                 $barang = Barang::findOrFail($barangId);
                 // Periksa apakah stok mencukupi
                 if ($barang->stok < $request->jumlah[$index]) {
-                    // return redirect()->back()->with('error', "Stok barang {$barang->nama_barang} tidak mencukupi");
                     return redirect()->back()->with('error', "Stok barang {$barang->nama_barang} tidak mencukupi. Stok tersedia: {$barang->stok}, jumlah yang diminta: {$request->jumlah[$index]}");
                 }
                 
@@ -130,6 +129,7 @@ class PenjualanController extends Controller
 
                 // Update stok barang
                 $barang->stok -= $request->jumlah[$index];
+                $barang->terjual += $request->jumlah[$index];
                 $barang->save();
                 $totalHarga += $barang->harga_jual * $request->jumlah[$index];
             }
@@ -189,6 +189,7 @@ class PenjualanController extends Controller
             foreach ($penjualan->penjualanBarang as $detail) {
                 $barang = Barang::find($detail->barang_id);
                 $barang->stok += $detail->jumlah;
+                $barang->terjual -= $detail->jumlah;
                 $barang->save();
             }
 
@@ -304,6 +305,7 @@ class PenjualanController extends Controller
 
                 // Update stok barang
                 $barang->stok -= $barangData['jumlah'];
+                $barang->terjual += $barangData['jumlah'];
                 $barang->save();
 
                 // Hitung total harga penjualan
@@ -360,6 +362,7 @@ class PenjualanController extends Controller
             foreach ($penjualan->penjualanBarang as $detail) {
                 $barang = Barang::find($detail->barang_id);
                 $barang->stok += $detail->jumlah;
+                $barang->terjual -= $detail->jumlah;
                 $barang->save();
             }
 

@@ -147,6 +147,7 @@ class BarangController extends Controller
             $hargaJual = (1 + ($request->harga_jual/100)) * $request->harga_beli;
             
             $barang->update([
+                'harga_lama' => $barang->harga_jual,
                 'kode_barang' => $barang->kode_barang,
                 'nama_barang' => $request->nama_barang,
                 'kategori_id' => $request->kategori_id,

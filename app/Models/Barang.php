@@ -20,7 +20,9 @@ class Barang extends Model
         'deskripsi',
         'harga_beli',
         'harga_jual',
+        'harga_lama',
         'stok',
+        'terjual',
         'stok_minimal',
         'status',
     ];
