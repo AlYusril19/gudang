@@ -22,7 +22,7 @@
 
                             <h6 class="mt-5 mb-1">Cek data pada bulan yang dipilih</h6>
                             <!-- Dropdown Pemilihan Bulan dan Tahun -->
-                            <form action="{{ route('dashboard.index') }}" method="GET">
+                            <form action="{{ route('dashboard.index') }}" id="formDateBeranda" method="GET">
                                 <div class="row g-2">
                                     <div class="col-md-6">
                                         <label for="bulan" class="form-label">Pilih Bulan</label>
@@ -45,7 +45,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                <button type="submit" class="btn btn-primary mt-3">Terapkan</button>
+                                {{-- <button type="submit" class="btn btn-primary mt-3">Terapkan</button> --}}
                             </form>
                         </div>
                         
@@ -176,6 +176,7 @@
 @endsection
 
 @section('js')
+{{-- Report Chart --}}
     <script>
         const profileReportChartEl = document.querySelector('#reportChart'),
         profileReportChartConfig = {
@@ -237,5 +238,16 @@
         const reportChart = new ApexCharts(profileReportChartEl, profileReportChartConfig);
         reportChart.render();
     }
+    </script>
+
+    {{-- Script Listener Tanggal Tahun --}}
+    <script>
+        document.getElementById('bulan').addEventListener('change', function() {
+            document.getElementById('formDateBeranda').submit();
+        });
+
+        document.getElementById('tahun').addEventListener('change', function() {
+            document.getElementById('formDateBeranda').submit();
+        });
     </script>
 @endsection
