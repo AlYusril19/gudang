@@ -29,11 +29,17 @@
                                 @endforeach
                             </td>
                             <td align="right">
+                                @php
+                                    $totalHarga = 0;
+                                @endphp
                                 @foreach ($p->penjualanBarang as $barang)
                                     {{ formatRupiah($barang->harga_jual * $barang->jumlah) }}<br>
+                                    @php
+                                        $totalHarga += $barang->harga_jual * $barang->jumlah;
+                                    @endphp
                                 @endforeach
                             </td>
-                            <td align="right">{{ formatRupiah($p->total_harga) }}</td>
+                            <td align="right">{{ formatRupiah($totalHarga) }}</td>
                         </tr>
                     @endforeach
                 </tbody>
