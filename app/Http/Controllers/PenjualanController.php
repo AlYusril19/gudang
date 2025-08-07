@@ -130,6 +130,7 @@ class PenjualanController extends Controller
                 // Update stok barang
                 $barang->stok -= $request->jumlah[$index];
                 $barang->terjual += $request->jumlah[$index];
+                $barang->populer += 1;
                 $barang->save();
                 $totalHarga += $barang->harga_jual * $request->jumlah[$index];
             }
@@ -189,7 +190,9 @@ class PenjualanController extends Controller
             foreach ($penjualan->penjualanBarang as $detail) {
                 $barang = Barang::find($detail->barang_id);
                 $barang->stok += $detail->jumlah;
-                $barang->terjual -= $detail->jumlah;
+                if ($barang->terjual > $detail->jumlah) {
+                    $barang->terjual -= $detail->jumlah;
+                }
                 $barang->save();
             }
 
@@ -306,6 +309,7 @@ class PenjualanController extends Controller
                 // Update stok barang
                 $barang->stok -= $barangData['jumlah'];
                 $barang->terjual += $barangData['jumlah'];
+                $barang->populer += 1;
                 $barang->save();
 
                 // Hitung total harga penjualan
@@ -362,7 +366,9 @@ class PenjualanController extends Controller
             foreach ($penjualan->penjualanBarang as $detail) {
                 $barang = Barang::find($detail->barang_id);
                 $barang->stok += $detail->jumlah;
-                $barang->terjual -= $detail->jumlah;
+                if ($barang->terjual > $detail->jumlah) {
+                    $barang->terjual -= $detail->jumlah;
+                }
                 $barang->save();
             }
 

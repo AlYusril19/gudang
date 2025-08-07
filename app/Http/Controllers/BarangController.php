@@ -39,6 +39,7 @@ class BarangController extends Controller
                          ->where('status', '!=', 'arsip');
         })
         ->orderByRaw("status = 'aktif' DESC")
+        ->orderBy('populer', 'desc')
         ->selectRaw('*, stok <= stok_minimal AS is_stok_minim, status = "aktif" AS is_aktif, nama_barang not like "%second%" AS isnot_second')
         ->orderBy($orderBy, $direction)
         ->get();
@@ -284,6 +285,7 @@ class BarangController extends Controller
                 return $query->where('nama_barang', 'like', "%{$search}%");
             })
             ->whereRaw('status != "arsip"')
+            ->orderBy('populer', 'desc')
             ->orderBy($orderBy, $direction)
             ->get();
 
@@ -299,6 +301,7 @@ class BarangController extends Controller
                     'harga_jual' => $barang->harga_jual,
                     'harga_lama' => $barang->harga_lama,
                     'deskripsi' => $barang->deskripsi,
+                    'created_at' => $barang->created_at,
                     'updated_at' => $barang->updated_at,
                     'galeri' => $barang->galeri,
                 ];

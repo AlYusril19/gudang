@@ -153,12 +153,14 @@
               </a>
             </li>
 
-            <li class="menu-item {{ \Route::is('setting.index') ? 'active' : '' }}">
-              <a href="{{ route('setting.index') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-bot"></i>
-                <div data-i18n="Analytics">Setting Bot</div>
-              </a>
-            </li>
+            @if ( auth()->user()->role === 'superadmin' )
+                <li class="menu-item {{ \Route::is('setting.index') ? 'active' : '' }}">
+                  <a href="{{ route('setting.index') }}" class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-bot"></i>
+                    <div data-i18n="Analytics">Setting Bot</div>
+                  </a>
+                </li>
+            @endif
 
             <!-- Layouts -->
             <li class="menu-item {{ \Route::is('barang.*') || \Route::is('kategori.*') ? 'active open' : '' }}">

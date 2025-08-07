@@ -12,6 +12,10 @@ class SettingController extends Controller
      */
     public function index()
     {
+        $user = auth()->user()->role;
+        if ($user !== 'superadmin') {
+            return redirect()->back()->with('error', 'anda tidak diizinkan akses halaman tersebut');
+        }
         return view('admin.setting_bot_telegram');
     }
 
