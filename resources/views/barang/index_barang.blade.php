@@ -91,8 +91,20 @@
                                 @endif
                             </td>
                             <td>
-                                <input type="checkbox" class="toggle-status" data-id="{{ $barang->id }}" {{ $barang->status == 'aktif' ? 'checked' : '' }}>
+                                {{-- <input type="checkbox" class="toggle-status" data-id="{{ $barang->id }}" {{ $barang->status == 'aktif' ? 'checked' : '' }}> --}}
+                                <input type="checkbox"
+                                    id="status-{{ $barang->id }}"
+                                    class="toggle-status"
+                                    data-id="{{ $barang->id }}"
+                                    {{ $barang->status == 'aktif' ? 'checked' : '' }}>
                                 <span class="status-label">{{ $barang->status == 'aktif' ? 'Aktif' : 'Arsip' }}</span>
+                                <br/>
+                                <input type="checkbox"
+                                    id="retur-{{ $barang->id }}"
+                                    class="toggle-retur"
+                                    data-id="{{ $barang->id }}"
+                                    {{ $barang->retur ? 'checked' : '' }}>
+                                <span class="retur-label">{{ $barang->retur ? 'Bisa Retur' : 'No Retur' }}</span>
                             </td>
                             <td>
                                 <div class="dropdown">
@@ -137,7 +149,7 @@
 
 @section('js')
     {{-- status aktif arsip --}}
-    <script>
+    {{-- <script>
         $(document).on('change', '.toggle-status', function() {
             var id = $(this).data('id');
             var status = $(this).is(':checked') ? 'aktif' : 'arsip';
@@ -163,7 +175,56 @@
                 }
             });
         });
+    </script> --}}
+
+    <script>
+        // Toggle status
+        $(document).on('change', '.toggle-status', function() {
+            var id = $(this).data('id');
+            var status = $(this).is(':checked') ? 'aktif' : 'arsip';
+
+            $.ajax({
+                url: '{{ route('barang.toggleStatus') }}',
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    id: id,
+                    status: status
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $('#barang-' + id).find('.status-label').text(status === 'aktif' ? 'Aktif' : 'Arsip');
+                    } else {
+                        alert(response.message);
+                    }
+                }
+            });
+        });
+
+        // Toggle retur
+        $(document).on('change', '.toggle-retur', function() {
+            var id = $(this).data('id');
+            var retur = $(this).is(':checked') ? 1 : 0;
+
+            $.ajax({
+                url: '{{ route('barang.toggleStatus') }}', // Buat route baru khusus retur
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    id: id,
+                    retur: retur
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $('#barang-' + id).find('.retur-label').text(retur === 1 ? 'Bisa Retur' : 'No Retur');
+                    } else {
+                        alert(response.message);
+                    }
+                }
+            });
+        });
     </script>
+
     
     {{-- gambar barang --}}
     <script>

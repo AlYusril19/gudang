@@ -30,12 +30,6 @@
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <label class="col-sm-2 col-form-label" for="id_telegram">ID Telegram</label>
-                            <div class="col-sm-10">
-                                <input type="numeric" class="form-control" id="id_telegram" name="id_telegram" placeholder="1234567890" required>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
                             <label for="password" class="col-sm-2 col-form-label">Password</label>
                             <div class="col-sm-10">
                                 <input type="password" class="form-control" id="password" name="password" required placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;">

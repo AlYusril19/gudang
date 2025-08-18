@@ -26,6 +26,7 @@ class Barang extends Model
         'stok_minimal',
         'populer',
         'status',
+        'retur',
     ];
     public function kategori()
     {

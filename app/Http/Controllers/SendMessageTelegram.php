@@ -16,10 +16,22 @@ class SendMessageTelegram extends Controller
             return response()->json(['error' => 'Pesan dan Chat ID diperlukan'], 400);
         }
 
-        $this->sendMessage($message, $chat_id);
+        $response = $this->sendMessage($message, $chat_id);
 
-        return response()->json(['success' => true, 'message' => 'Pesan berhasil dikirim']);
+        if (!$response->successful() || !$response->json('ok')) {
+            // kalau gagal, Telegram biasanya kasih error_description
+            return response()->json([
+                'success' => false,
+                'error' => $response->json('description') ?? 'Gagal mengirim pesan, chat_id tidak valid.'
+            ], 400);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Pesan berhasil dikirim ke Telegram'
+        ]);
     }
+
     public function sendPhotoApi(Request $request)
     {
         $filePath = $request->input('file_path');
@@ -47,7 +59,8 @@ class SendMessageTelegram extends Controller
             'parse_mode' => 'HTML'
         ];
 
-        Http::post($url, $data);
+        $response = Http::post($url, $data);
+        return $response;
     }
 
     public function sendPhoto($filePath, $chat_id, $caption = null)

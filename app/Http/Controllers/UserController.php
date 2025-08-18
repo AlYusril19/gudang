@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class UserController extends Controller
@@ -61,7 +62,6 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'nohp' => 'required|string|max:13',
-            'id_telegram' => 'required|string|max:15',
             'password' => 'required|string|min:8|confirmed',
             'role' => ['required', Rule::in($allowedRoleUser)],
         ]);
@@ -138,10 +138,12 @@ class UserController extends Controller
     {
         // Validasi input
         $request->validate([
-            'name' => 'required|string|max:255',
-            'nohp' => 'required|string|max:13',
-            'id_telegram' => 'required|string|max:15',
-            'password' => 'nullable|string|min:8|confirmed',
+            'name'          => 'nullable|string|max:64',
+            'nohp'          => 'nullable|string|max:13',
+            'id_telegram'   => 'nullable|string|max:15',
+            'password'      => 'nullable|string|min:8|confirmed',
+            'alamat'        => 'nullable|string|max:255',
+            'tanggal_lahir' => 'nullable|date',
         ]);
 
         // Ambil user yang sedang login
@@ -151,6 +153,8 @@ class UserController extends Controller
         $user->name = $request->name;
         $user->nohp = $request->nohp;
         $user->id_telegram = $request->id_telegram;
+        $user->alamat = $request->alamat;
+        $user->tanggal_lahir = $request->tanggal_lahir;
 
         // Jika password diisi, baru update password
         if ($request->filled('password')) {
@@ -161,6 +165,33 @@ class UserController extends Controller
         $user->save();
 
         return response()->json(['message' => 'Profile updated successfully!'], 200);
+    }
+
+    public function apiUserProfilUpdate(Request $request) 
+    {
+        $request->validate([
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        $user = $request->user();   // alias Auth::user()
+
+        if ($request->hasFile('photo') && $request->file('photo')->isValid()) {
+
+            if ($user->photo && Storage::disk('public')->exists($user->photo)) {
+                Storage::disk('public')->delete($user->photo);
+            }
+
+            $path = $request->file('photo')->store('photos', 'public');
+
+            $user->photo = $path;
+        }
+
+        $user->save();
+
+        return response()->json([
+            'message'   => 'Foto profil berhasil diperbarui!',
+            'photo_url' => $user->photo ? Storage::url($user->photo) : null,
+        ], 200);
     }
 
     public function apiUser($id) {

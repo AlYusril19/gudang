@@ -36,6 +36,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/get-user-admin', [UserController::class, 'apiUserAdmin']);
     Route::get('/get-user/{id}', [UserController::class, 'apiUser']);
     Route::put('/user/update', [UserController::class, 'apiUserUpdate']);
+    Route::put('/user/profile-update', [UserController::class, 'apiUserProfilUpdate']);
     Route::get('/get-teknisi/{id}', [UserController::class, 'apiTeknisi']);
     Route::get('/get-helper/{id}', [UserController::class, 'apiHelper']);
     Route::post('/penjualan', [PenjualanController::class, 'storeApi']);

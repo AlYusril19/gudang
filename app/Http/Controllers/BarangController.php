@@ -137,6 +137,7 @@ class BarangController extends Controller
             'harga_jual' => 'required|numeric|min:1',
             'deskripsi' => 'required|string|max:1024',
             'status' => 'required|string',
+            'retur' => 'required|boolean',
             'stok_minimal' => 'required|numeric',
             'gambar' => 'nullable', // Bisa kosong
             'gambar.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:5120', // Validasi untuk setiap file dalam array 'fotos'
@@ -157,6 +158,7 @@ class BarangController extends Controller
                 'deskripsi' => $request->deskripsi,
                 'stok_minimal' => $request->stok_minimal,
                 'status' => $request->status,
+                'retur' => $request->retur,
             ]);
 
             $message = '';
@@ -205,7 +207,11 @@ class BarangController extends Controller
     {
         try {
             $barang = Barang::findOrFail($request->id);
-            $barang->status = $request->status;
+            if ($request->status) {
+                $barang->status = $request->status;
+            }else {
+                $barang->retur = $request->retur;
+            }
             $barang->save();
 
             return response()->json(['success' => true, 'message' => 'Status barang berhasil diubah']);
@@ -255,14 +261,9 @@ class BarangController extends Controller
     {
         $orderBy = $request->get('order_by', 'nama_barang');  // Default sorting by nama_barang
         $direction = $request->get('direction', 'asc');       // Default direction is ascending
-        $searchWords = ['second', 'modif'];  // Kata-kata pencarian
 
         // Query dengan pencarian dan pengurutan
-        $barangs = Barang::where(function ($query) use ($searchWords) {
-                    foreach ($searchWords as $word) {
-                        $query->orWhere('nama_barang', 'like', "%{$word}%");
-                    }
-                })
+        $barangs = Barang::where('retur', 1)
                 ->where('status', '!=', 'arsip')  // Status tidak sama dengan arsip
                 ->orderBy($orderBy, $direction)
                 ->get();
