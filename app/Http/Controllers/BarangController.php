@@ -137,7 +137,7 @@ class BarangController extends Controller
             'harga_jual' => 'required|numeric|min:1',
             'deskripsi' => 'required|string|max:1024',
             'status' => 'required|string',
-            'retur' => 'required|boolean',
+            'retur' => 'nullable|boolean',
             'stok_minimal' => 'required|numeric',
             'gambar' => 'nullable', // Bisa kosong
             'gambar.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:5120', // Validasi untuk setiap file dalam array 'fotos'
@@ -158,7 +158,7 @@ class BarangController extends Controller
                 'deskripsi' => $request->deskripsi,
                 'stok_minimal' => $request->stok_minimal,
                 'status' => $request->status,
-                'retur' => $request->retur,
+                'retur' => $request->retur ?? 0,
             ]);
 
             $message = '';

@@ -8,3 +8,8 @@ All notable changes to this template will be documented in this file.
 - add item user in table user (biodata & photo)
 - bugfix send message telegram
 - fitur barang kembali
+
+## [1.6.10] - [2025-08-18]
+
+### Added
+- bugfix edit barang
