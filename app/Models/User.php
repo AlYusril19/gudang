@@ -49,4 +49,11 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    // Relasi ke databse Absensi
+    public function absensi()
+    {
+        return $this->hasMany(\App\Models\Absensi::class);
+    }
+
 }

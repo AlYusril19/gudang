@@ -15,19 +15,26 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $status = $request->get('status', 'aktif'); // default 'aktif'
-        $role = $request->get('role'); // bisa null
-        
-        $users = User::where('status', $status)
-            ->when($role, function ($query, $role) {
-                // Jika role disediakan di request, filter sesuai
-                $query->where('role', $role);
-            }, function ($query) {
-                // Jika tidak ada role, tampilkan semua role kecuali magang dan mitra
-                $query->whereNotIn('role', ['magang', 'mitra']);
-            })
-            ->orderBy('created_at')
-            ->get();
+        $status = $request->get('status', 'aktif');
+        $role   = $request->get('role');
+
+        $users = User::query()
+            ->where('status', $status);
+
+        if ($role) {
+            // Jika role dipilih
+            $users->where('role', $role);
+        }
+        elseif ($status === 'arsip') {
+            $users->where('status', 'arsip');
+        }
+        else {
+            // Default: selain magang & mitra
+            $users->whereNotIn('role', ['magang', 'mitra']);
+        }
+
+        $users = $users->orderBy('created_at', 'desc')->get();
+
         return view('admin.users-index', compact('users'));
     }
 
@@ -136,7 +143,6 @@ class UserController extends Controller
     /*  */
     public function apiUserUpdate(Request $request)
     {
-        // Validasi input
         $request->validate([
             'name'          => 'nullable|string|max:64',
             'nohp'          => 'nullable|string|max:13',
@@ -146,26 +152,32 @@ class UserController extends Controller
             'tanggal_lahir' => 'nullable|date',
         ]);
 
-        // Ambil user yang sedang login
+        /** @var \App\Models\User $user */
         $user = auth()->user();
 
-        // Update nama
-        $user->name = $request->name;
-        $user->nohp = $request->nohp;
-        $user->id_telegram = $request->id_telegram;
-        $user->alamat = $request->alamat;
-        $user->tanggal_lahir = $request->tanggal_lahir;
+        if (!$user) {
+            return response()->json(['message' => 'Unauthenticated'], 401);
+        }
 
-        // Jika password diisi, baru update password
+        $user->fill($request->only([
+            'name',
+            'nohp',
+            'id_telegram',
+            'alamat',
+            'tanggal_lahir'
+        ]));
+
         if ($request->filled('password')) {
             $user->password = Hash::make($request->password);
         }
 
-        // Simpan perubahan
         $user->save();
 
-        return response()->json(['message' => 'Profile updated successfully!'], 200);
+        return response()->json([
+            'message' => 'Profile updated successfully!'
+        ]);
     }
+
 
     public function apiUserProfilUpdate(Request $request) 
     {
@@ -217,5 +229,9 @@ class UserController extends Controller
         $users = User::where('role', 'admin')
             ->orWhere('role', 'superadmin')->get();
         return response()->json($users);
+    }
+    public function apiUsername($name) {
+        $user = User::where('name', $name)->first();
+        return response()->json($user);
     }
 }

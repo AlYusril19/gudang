@@ -34,7 +34,7 @@ class CustomerController extends Controller
         $request->validate([
             'nama' => 'required|string|max:64|unique:customers',
             'hp' => 'nullable',
-            'mitra_id' => 'nullable|exists:user,id'
+            'mitra_id' => 'nullable|exists:users,id'
         ]);
 
         Customer::create($request->all());
