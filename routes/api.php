@@ -31,6 +31,7 @@ Route::post('/login', [LoginController::class, 'apiLogin']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/get-barang', [BarangController::class, 'getBarangs']);
+    Route::get('/get-barang-global', [BarangController::class, 'getBarangsGlobal']);
     Route::get('/get-barang-kembali', [BarangController::class, 'getBarangsKembali']);
     Route::get('/get-customer', [CustomerController::class, 'getCustomers']);
     Route::get('/get-user-admin', [UserController::class, 'apiUserAdmin']);

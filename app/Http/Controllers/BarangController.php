@@ -257,6 +257,22 @@ class BarangController extends Controller
         // Kembalikan sebagai JSON response
         return response()->json($barangs);
     }
+    public function getBarangsGlobal(Request $request)
+    {
+        $orderBy = $request->get('order_by', 'nama_barang');  // Default sorting by nama_barang
+        $direction = $request->get('direction', 'asc');       // Default direction is ascending
+        $search = $request->get('search');  // Ambil parameter pencarian
+
+        // Query dengan pencarian dan pengurutan
+        $barangs = Barang::with('kategori', 'galeri')->when($search, function ($query, $search) {
+                return $query->where('nama_barang', 'like', "%{$search}%");
+            })
+            ->orderBy($orderBy, $direction)
+            ->get();
+
+        // Kembalikan sebagai JSON response
+        return response()->json($barangs);
+    }
     public function getBarangsKembali(Request $request)
     {
         $orderBy = $request->get('order_by', 'nama_barang');  // Default sorting by nama_barang
